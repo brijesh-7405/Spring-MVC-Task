@@ -35,7 +35,7 @@
 			    <td>${user.firstname}</td>
 			    <td>${user.lastname}</td>
 			    <td>${user.email}</td>
-			    <td>${user.phone}</td>
+			    <td>${user.phone?string.computer}</td>
 			    <td>${user.dateofbirth}</td>
 			    <td>${user.gender}</td>
 			    <td>${user.language}</td>

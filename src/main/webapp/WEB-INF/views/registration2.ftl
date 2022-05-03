@@ -16,7 +16,7 @@
 <section>
 	<div class="container Form-Section">
 		<h2 class="header" style="text-decoration: underline"><#if user ??>Edit <#else>Registration </#if> Page</h2>
-				<form <#if user ??>action="EditServlet" <#else>action="UserRegistration" </#if> method="GET" class="form-horizontal" id="myform" enctype="multipart/form-data">
+				<form <#if user ??>action="EditServlet" <#else>action="UserRegistration" </#if> method="POST" class="form-horizontal" id="myform" enctype="multipart/form-data" modelAttribute="user">
 		<div class="row left-gap">
 			<input type="hidden" name="userid" <#if user ??>value="${user.userID}"</#if> id="userid">
 			 <div class="col-md-5">
@@ -52,10 +52,10 @@
 			<div class="col-md-2"></div>
 			<div class="col-md-5">
 				 <div class="form-group">
-					Phone:<input type="text" name="phone" maxlength="10" <#if user ??>value="${user.phone}"</#if> size="10" id="phone" class="form-control" placeholder="Enter Phone Number" required>
+					Phone:<input type="text" name="phone" maxlength="10" <#if user ??>value="${user.phone?string.computer}"</#if> size="10" id="phone" class="form-control" placeholder="Enter Phone Number" required>
 				 </div>
 				 <div class="form-group">
-				 	Date of Birth: <input type="date" id="dob" class="form-control" <#if user ??>value="${user.dateofbirth!}"</#if> name="birthdate" required>
+				 	Date of Birth: <input type="date" id="dob" class="form-control" <#if user ??>value="${user.dateofbirth!}"</#if> name="dateofbirth" required>
 				 </div>
 				<#if !user ??>
 					 <div class="form-group">
@@ -71,19 +71,19 @@
 				 	Language Known:
 				 	<div class="checkbox checked-checkbox">
 				 		   <label class="checkbox-inline" for="eng">
-				 	        	<input type="checkbox" name="lang" id="eng" <#if user ?? && user.language?contains("English")>checked</#if> value="English">
+				 	        	<input type="checkbox" name="language" id="eng" <#if user ?? && user.language?contains("English")>checked</#if> value="English">
 						   English
 						   </label>
 						   <label class="checkbox-inline" for="hindi">
-								<input type="checkbox" name="lang" id="hindi" <#if user ?? && user.language?contains("Hindi")>checked</#if> value="Hindi">
+								<input type="checkbox" name="language" id="hindi" <#if user ?? && user.language?contains("Hindi")>checked</#if> value="Hindi">
 							Hindi
 							</label>
 							<label class="checkbox-inline" for="guj">
-								<input type="checkbox" name="lang" id="guj" <#if user ?? && user.language?contains("Gujarati")>checked</#if>  value="Gujarati">
+								<input type="checkbox" name="language" id="guj" <#if user ?? && user.language?contains("Gujarati")>checked</#if>  value="Gujarati">
 							Gujarati
 							</label>
 							<label class="checkbox-inline" for="chi">
-								<input type="checkbox" name="lang" id="chi" <#if user ?? && user.language?contains("Chinese")>checked</#if> value="Chinese">
+								<input type="checkbox" name="language" id="chi" <#if user ?? && user.language?contains("Chinese")>checked</#if> value="Chinese">
 							Chinese
 							</label>
 				    </div>
@@ -97,9 +97,9 @@
 			 		<fieldset>
     					<legend>Security Questions:</legend>
 			    			1.Who was your childhood super hero?<br>
-			    				 <input type="text"  class="form-control"  placeholder="SuperMan" id="ans1" maxlength="60" name="q1" required><br>
+			    				 <input type="text"  class="form-control"  placeholder="SuperMan" id="ans1" maxlength="60" name="answer1" required><br>
 			    			2.What was your childhood nickname?<br>
-			    				 <input type="text" class="form-control"  placeholder="Tom" id="ans2" maxlength="60" name="q2" required><br>
+			    				 <input type="text" class="form-control"  placeholder="Tom" id="ans2" maxlength="60" name="answer2" required><br>
     				</fieldset>
     			 </div>
     		 </div>

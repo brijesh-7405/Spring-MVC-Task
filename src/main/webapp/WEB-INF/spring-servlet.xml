@@ -2,34 +2,95 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-	        http://www.springframework.org/schema/beans/spring-beans.xsd
+	        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 	         http://www.springframework.org/schema/context
-        https://www.springframework.org/schema/context/spring-context.xsd
+        https://www.springframework.org/schema/context/spring-context-4.0.xsd
         http://www.springframework.org/schema/util
-        https://www.springframework.org/schema/util/spring-util.xsd
+        https://www.springframework.org/schema/util/spring-util-4.0.xsd
         http://www.springframework.org/schema/mvc
-        https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+        https://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/tx
+        https://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
-	<mvc:annotation-driven />
-
+	<tx:annotation-driven />
+	
+	<context:component-scan
+		base-package="com.User.User_Management_System.Controller" />
+		
+		
 	<!-- freemarker config -->
-	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+	<bean id="freemarkerConfig"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
 		<property name="templateLoaderPath" value="/WEB-INF/views/" />
 	</bean>
 
 	<!-- View resolvers can also be configured with ResourceBundles or XML files. 
 		If you need different view resolving based on Locale, you have to use the 
 		resource bundle resolver. -->
-	<bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
 		<property name="cache" value="true" />
 		<property name="prefix" value="" />
 		<property name="suffix" value=".ftl" />
 	</bean>
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+	
 
-	<context:component-scan
-		base-package="com.User.User_Management_System.Controller" />
+	<bean name="datasource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName"
+			value="com.mysql.cj.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/UserManagementSystemMVC" />
+		<property name="username" value="root" />
+		<property name="password" value="Brijesh163@" />
+	</bean>
+
+	<bean name="factory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+
+		<property name="dataSource">
+			<ref bean="datasource" />
+		</property>
+
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">create</prop>
+			</props>
+		</property>
+		<property name="annotatedClasses">
+			<list>
+				<value>com.User.User_Management_System.Bean.User</value> <!-- Entity classes -->
+				<value>com.User.User_Management_System.Bean.UserAddress</value>
+			</list>
+		</property>
+
+	</bean>
+	<bean class="org.springframework.orm.hibernate5.HibernateTemplate"
+		name="hibernateTemplate">
+		<property name="sessionFactory" ref="factory" />
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="factory" />
+	</bean>
+
+	
+	<bean
+		class="com.User.User_Management_System.UtilityClass.EncryptPwd"
+		name="encryption" />
+	<bean
+		class="com.User.User_Management_System.Service.UserServiceImpl"
+		name="userservice" />
+	<bean class="com.User.User_Management_System.Dao.UserDaoImpl"
+		name="userdao" />
 </beans>

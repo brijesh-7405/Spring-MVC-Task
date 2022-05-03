@@ -22,7 +22,7 @@ import com.User.User_Management_System.Service.UserService;
 import com.User.User_Management_System.Service.UserServiceImpl;
 import com.User.User_Management_System.UtilityClass.CheckValidation;
 @MultipartConfig
-@WebFilter(urlPatterns={"/UserRegistration"})
+//@WebFilter(urlPatterns={"/UserRegistration"})
 public class Validation implements Filter {
 	static final Logger LOG = LogManager.getLogger(Validation.class.getName());
 	private transient CheckValidation  val;
