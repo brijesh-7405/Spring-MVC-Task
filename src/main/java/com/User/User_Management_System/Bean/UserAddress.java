@@ -7,8 +7,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /*UserAddress Bean Class*/
 @Entity
+@Component
+@Scope("prototype")
 public class UserAddress {
 	@Transient
 	private int userid;

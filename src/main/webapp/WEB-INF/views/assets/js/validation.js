@@ -102,7 +102,7 @@ $(document).ready(function() {
 			})
 			$(".checked-checkbox").mouseover(function(){
 				$(".btn-error").remove();
-				if($("input[name='lang']:checked").length == 0)
+				if($("input[name='language']:checked").length == 0)
 				{
 					$(".checked-checkbox").after('<span class="btn-error">*Required Field</span>');
 				}

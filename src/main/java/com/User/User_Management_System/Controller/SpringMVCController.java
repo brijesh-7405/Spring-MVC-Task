@@ -1,5 +1,6 @@
 package com.User.User_Management_System.Controller;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MimeTypeUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,15 +49,14 @@ import com.User.User_Management_System.Service.UserService;
 import com.User.User_Management_System.Service.UserServiceImpl;
 import com.User.User_Management_System.UtilityClass.EncryptPwd;
 
-
-//@SuppressWarnings("serial")
-//@javax.servlet.annotation.MultipartConfig
 @Controller
 public class SpringMVCController{
 	static final Logger LOG = LogManager.getLogger(SpringMVCController.class.getName());
 	@Autowired
 	@Qualifier("userservice")
 	private UserService userservice;
+	@Autowired
+	private EncryptPwd encrypt;
 	
 	@RequestMapping({"/","/index"})
 	public String index()
@@ -66,45 +68,239 @@ public class SpringMVCController{
 	{
 		return "registration2";
 	}
-	@PostMapping(path="/UserRegistration", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-	public String registerUser(@ModelAttribute("user") User user,@ModelAttribute UserAddress address[])
+	@RequestMapping("/forgotpwd")
+	public String forgotpwd()
 	{
-		System.out.println(user.getAddress());
-		System.out.println(address[0]);
-		int id = userservice.registerUser(user);
-		System.out.println("idansan"+id);
+		return "forgotpwd";
+	}
+	@SuppressWarnings("null")
+	@PostMapping(path="/UserRegistration", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	public String registerUser(@ModelAttribute User  user,HttpSession session,@RequestParam("image[]") MultipartFile[] files,HttpServletRequest request) throws IOException, ServletException
+	{
+//		@SuppressWarnings({ "unchecked", "rawtypes" })
+//		ArrayList<Part> fileParts = (ArrayList) request.getParts().stream().filter(new Predicate<Part>() {
+//			public boolean test(Part part) {
+//			return "image[]".equals(part.getName()) && part.getSize() > 0;       //it scan all the fields of form but only return the images added into the uploader
+//		}
+//		}).collect(Collectors.toList()); 
+//		List<UserImage> userimg = new ArrayList<UserImage>();
+//		InputStream inputStream = null;
+//		UserImage img=null;
+//        for (Part filePart : fileParts) {
+//            if (filePart != null && filePart.getSize() != 0) {
+//                inputStream = filePart.getInputStream();
+//                byte[] imgbytes = IOUtils.toByteArray(inputStream);
+//                img.setImgbytes(imgbytes);
+//                userimg.add(img);
+//            }
+//            LOG.debug("User Images Added in database");
+//        }
+//			List<UserImage> userimg = new ArrayList<UserImage>();
+//		InputStream inputStream = null;
+//        for (MultipartFile filePart : files) {
+//            if (filePart != null && filePart.getSize() != 0) {
+//            	UserImage img = null;
+//                inputStream = filePart.getInputStream();
+//                byte[] imgbytes = IOUtils.toByteArray(inputStream);
+//                img.setImgbytes(imgbytes);
+//                userimg.add(img);
+////                ((UserImage) userimg).setImage(inputStream);
+//            }
+//        }
+//        user.setImage(userimg);
+//		System.out.println(user.getImage());
+		if(userservice.userExist(user.getEmail()))
+		{
+			LOG.info("*Email already exist");
+			return "registration2";
+		}
+		else
+		{
+			int id = userservice.registerUser(user);
+			System.out.println("idansan"+id);
+			session=request.getSession(false);
+	        if(session.getAttribute("USER") != null)           
+	        {
+	        	return "redirect:AdminWork";      //if admin add new user from its login side then redirect it to admin panel
+	        	
+	        }
+	        else
+	        {
+	        	return "index";   //Check if session has no attribute the redirect it to login page
+	        }
+		}
+		
+	
+	}
+	@RequestMapping(value = "/CheckUserExistDone", method = RequestMethod.POST)
+	@ResponseBody
+	public String checkuserexist(@RequestParam("email") String email)
+	{
+		String message="";
+		if(userservice.userExist(email))                         //Condition check at the registration time for new user that email exist or not
+		{
+			message = "*Email already exist";
+		}
+		return message;
+	}
+	
+	@PostMapping("/LoginServlet")
+	public String login(HttpServletRequest request,HttpSession session,Model model,@RequestParam String email,@RequestParam String password)
+	{
+		String pwd = encrypt.encryption(password);
+		User user = userservice.checkUser(email);     //check the user is present in database or not
+		if(user!=null)
+			{
+				if(pwd.equals(user.getPassword()))
+				{
+					String role = user.getRole();
+					session.setAttribute("USER",user);
+					if(role.equals("user"))
+					{
+						 LOG.debug("User-logged-in"); 
+						return "redirect:userDashBoard";
+			           
+					}
+					else
+					{
+						LOG.debug("Admin-logged-in");
+						return "redirect:AdminWork";
+						  
+					}
+				}
+				else
+				{
+					model.addAttribute("message","*Invalid Password");
+					return "index";
+				}
+			}
+			else
+			{
+				LOG.error("Login fails"); 
+				model.addAttribute("message","*Unauthorized User");
+				return "index";
+			}
+	}
+	@RequestMapping("/AdminWork")
+	public String adminPanel(Model model)
+	{
+		List<User> users;
+		users = userservice.getUsers();                     //Calling a method who returns the all users list 
+	 	model.addAttribute("UsersList",users);			//Storing users list into request Attribute
+	 	LOG.info("userlist updated");
+	 	return "adminDashBoard";
+	}
+	@RequestMapping("/userDashBoard")
+	public String userDashBoard()
+	{
+		return "userDashBoard";
+	}
+	@RequestMapping("/LogOut")
+	public String logout(HttpServletRequest request,HttpSession session)
+	{
+        session=request.getSession(false); 
+        if(session!=null)
+        {
+	         session.invalidate(); 								//Session close or Session Invalidate after logout user
+        }   
+        LOG.debug("Successfully logged out");
+        return "index";
+	}
+	@RequestMapping("/ForgotPwd")
+	public String afterforgotpwd(Model model,@RequestParam String email
+									,@RequestParam String birthdate
+									,@RequestParam("q1") String ans1
+									,@RequestParam("q2") String ans2)
+	{	
+		User user = userservice.checkUser(email);			//check the user is present in database or not
+		if(user!=null)															//check the user is present in database or not
+		{
+				if(birthdate.equals(user.getDateofbirth()))
+				{
+					if(ans1.equals(user.getAnswer1()) && ans2.equals(user.getAnswer2()))
+					{
+						LOG.debug("All details are correct");
+						model.addAttribute("email",user.getEmail());
+						System.out.println(user.getEmail());
+						return "resetpwd";
+					}
+					else
+					{
+						LOG.error("Security Answers are wrong");
+						model.addAttribute("message","*Security Answers are wrong");
+						return "forgotpwd";
+					}
+				}
+				else
+				{
+					LOG.error("Invalid BirthDate");
+					model.addAttribute("message","*Invalid BirthDate");
+					return "forgotpwd";
+				}
+		}
+		else
+		{
+			LOG.error("Invalid user");
+			model.addAttribute("message","*Invalid User");
+			return "forgotpwd";
+		}
+	}
+	@RequestMapping("/resetpwd")
+	public String resetpwd()
+	{
+		return "resetpwd";
+	}
+	@RequestMapping("/ResetPassword")
+	public String changepwd(HttpServletRequest request,@RequestParam("usermail") String usermail,@RequestParam String password)
+	{
+		String pwd = encrypt.encryption(password);
+		User user = userservice.checkUser(usermail);
+		user.setPassword(pwd);
+		LOG.info("Password is changed");
+		userservice.changePwd(user);      //Calling method who change the password and reset to the database
 		return "index";
 	}
+	@RequestMapping(value = "/DeleteUser", method = RequestMethod.POST)
+	@ResponseBody
+	public String deleteUser(@RequestParam String userid)
+	{
+		LOG.debug("Enter in Delete User servlet");
+		int uid = Integer.parseInt(userid);
+		userservice.deleteUser(uid);               //Calling a method to delete the user from the database
+		LOG.debug("User deleted");
+		return "redirect:AdminWork";
+	}
+	@RequestMapping("/UserDetails")
+	public String goingToEdit(HttpServletRequest request,HttpSession session,Model model)
+	{
+		session=request.getSession(false);
+		User user = (User) session.getAttribute("USER");
+		RequestDispatcher rf=request.getRequestDispatcher("registration.jsp");
+		if(user.getRole().equals("user"))
+		{
+			model.addAttribute("user",user);					//if role is user then store the user from session in request attribute
+			LOG.info("Updated User stored in Request");
+		 	return "registration2";
+		}
+		else
+		{
+//			String uid = request.getParameter("userid");
+//			int userid = Integer.parseInt(uid);
+//			User usr = userservice.getUserDetails(userid);      //else get the particular user from the user id which edit part is on Admin hand
+//			model.addAttribute("user", usr);
+//			LOG.info("Updated User stored in Request");
+			return "registration2";
+		}
+	}
 }
-//	UserAddressService userAddressService = new UserAddressServiceImpl();
-//	UserImageService userImageService = new UserImageServiceImpl();
-//	EncryptPwd ency = new EncryptPwd();
-//	@RequestMapping({"/","/index"})
-//	public String index()
-//	{
-//		return "index";
-//	}
-//	
-//	@RequestMapping("/forgotpwd")
-//	public String forgotpwd()
-//	{
-//		return "forgotpwd";
-//	}
+
 //	@RequestMapping("/registration2")
 //	public String register()
 //	{
 //		return "registration2";
 //	}
-//	@RequestMapping("/resetpwd")
-//	public String resetpwd()
-//	{
-//		return "resetpwd";
-//	}
-//	@RequestMapping("/userDashBoard")
-//	public String userDashBoard()
-//	{
-//		return "userDashBoard";
-//	}
+
+
 //	@PostMapping("/LoginServlet")
 //	public String login(HttpServletRequest request,HttpSession session,Model model,@RequestParam String email,@RequestParam String password)
 //	{
@@ -143,48 +339,9 @@ public class SpringMVCController{
 //				return "index";
 //			}
 //	}
-//	@RequestMapping("/LogOut")
-//	public String logout(HttpServletRequest request,HttpSession session)
-//	{
-//        session=request.getSession(false); 
-//        if(session!=null)
-//        {
-//	         session.invalidate(); 								//Session close or Session Invalidate after logout user
-//        }   
-//        LOG.debug("Successfully logged out");
-//        return "index";
-//	}
+
 //	
-//	@RequestMapping("/AdminWork")
-//	public String adminPanel(Model model)
-//	{
-//		List<User> users;
-//		users = userservice.getUsers();                     //Calling a method who returns the all users list 
-//	 	model.addAttribute("UsersList",users);			//Storing users list into request Attribute
-//	 	LOG.info("userlist updated");
-////		List<User> usersdata = new ArrayList<>();
-////		for(User user: users) {
-////			User userdata = new User();
-////			userdata.setUserID(user.getUserID());
-////			userdata.setFirstname(null)
-////			userdata.setUserID(user.getUserID());
-////			userdata.setName(user.getName());
-////			userdata.setEmail(user.getEmail());
-////			userdata.setPhone(user.getPhone());
-////			userdata.setGame(user.getGame());
-////			userdata.setGender(user.getGender());
-////			usersdata.add(userdata);
-////		}
-////		JsonObject jobj = new JsonObject();
-////		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-////		jobj.addProperty("status", "success");
-////		jobj.add("data", gson.toJsonTree(usersdata));
-////		response.setContentType("application/json");
-////		PrintWriter out = response.getWriter();
-////		out.print(jobj);
-////		out.flush();
-//	 	return "adminDashBoard";
-//	}
+
 //	@PostMapping(path="/UserRegistration", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 //	public String register(@RequestParam("firstname") String fname,
 //							@RequestParam("lastname") String lname,
@@ -278,64 +435,9 @@ public class SpringMVCController{
 //		        }
 //				
 //	}
-//	@RequestMapping("/ForgotPwd")
-//	public String afterforgotpwd(Model model,@RequestParam String email
-//									,@RequestParam String birthdate
-//									,@RequestParam("q1") String ans1
-//									,@RequestParam("q2") String ans2)
-//	{	
-//		User user = userservice.checkUser(email);			//check the user is present in database or not
-//		if(user!=null)															//check the user is present in database or not
-//		{
-//				if(birthdate.equals(user.getDateofbirth()))
-//				{
-//					if(ans1.equals(user.getAnswer1()) && ans2.equals(user.getAnswer2()))
-//					{
-//						LOG.debug("All details are correct");
-//						model.addAttribute("email",user.getEmail());
-//						return "resetpwd";
-//					}
-//					else
-//					{
-//						LOG.error("Security Answers are wrong");
-//						model.addAttribute("message","*Security Answers are wrong");
-//						return "forgotpwd";
-//					}
-//				}
-//				else
-//				{
-//					LOG.error("Invalid BirthDate");
-//					model.addAttribute("message","*Invalid BirthDate");
-//					return "forgotpwd";
-//				}
-//		}
-//		else
-//		{
-//			LOG.error("Invalid user");
-//			model.addAttribute("message","*Invalid User");
-//			return "forgotpwd";
-//		}
-//	}
-//	@RequestMapping("/ResetPassword")
-//	public String changepwd(HttpServletRequest request,@RequestParam String usermail,@RequestParam String password)
-//	{
-//		String pwd = ency.encryption(password);
-//		UserService userservice=  new UserServiceImpl();
-//		LOG.info("Password is changed");
-//		userservice.changePwd(pwd,usermail);      //Calling method who change the password and reset to the database
-//		return "index";
-//	}
-//	@RequestMapping(value = "/CheckUserExistDone", method = RequestMethod.POST)
-//	@ResponseBody
-//	public String checkuserexist(@RequestParam("email") String email)
-//	{
-//		String message="";
-//		if(userservice.userExist(email))                          //Condition check at the registration time for new user that email exist or not
-//		{
-//			message = "*Email already exist";
-//		}
-//		return message;
-//	}
+
+
+
 //		@RequestMapping("/UserDetails")
 //		public String goingToEdit(HttpServletRequest request,HttpSession session,Model model)
 //		{

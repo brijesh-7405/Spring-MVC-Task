@@ -16,7 +16,7 @@
 <section>
 	<div class="container Form-Section">
 		<h2 class="header" style="text-decoration: underline"><#if user ??>Edit <#else>Registration </#if> Page</h2>
-				<form <#if user ??>action="EditServlet" <#else>action="UserRegistration" </#if> method="POST" class="form-horizontal" id="myform" enctype="multipart/form-data" modelAttribute="user">
+				<form <#if user ??>action="EditServlet" <#else>action="UserRegistration" </#if> method="POST" class="form-horizontal" id="myform" enctype="multipart/form-data">
 		<div class="row left-gap">
 			<input type="hidden" name="userid" <#if user ??>value="${user.userID}"</#if> id="userid">
 			 <div class="col-md-5">
@@ -110,7 +110,7 @@
 					<div class="col-md-12">
 		    			 <div class="form-group">
 						    <div><label>Upload Photo:</label></div>
-						    <#if user ??>
+						    <#if user ?? && user.image ??>
 						    	<#list user.image as userimg>
 						    		<span id="${userimg.imgid}" class="delete-image">
 									<span class="uploadedimage"><img src="data:image/jpg;base64,${userimg.base64Image}" class="image" width="180" height="180"/>
@@ -131,20 +131,20 @@
 							<input type="hidden" name="addressid" value="${useradd.addressid}">
 							  <div class="form-group">
 								<p class="add-head">Address line1:</p>
-									<input type="text" class="form-control add-head" value="${useradd.add1}" placeholder="Address" maxlength="50" name="address1" required>
+									<input type="text" class="form-control add-head" value="${useradd.add1}" placeholder="Address" maxlength="50" name="address[${useradd?index}].add1" required>
 							   </div>
-							   <div class="form-group"><p class="add-head">City: </p><input type="text"  value="${useradd.city}" placeholder="Ahmedabad" id="city_0" maxlength="50" class="form-control add-head" name="city" required></div>
-							   <div class="form-group"><p class="add-head"> Country: </p><input type="text" placeholder="India" value="${useradd.country}" id="country_0" maxlength="50" class="form-control add-head" name="country" required></div>
+							   <div class="form-group"><p class="add-head">City: </p><input type="text"  value="${useradd.city}" placeholder="Ahmedabad" id="city_0" maxlength="50" class="form-control add-head" name="address[${useradd?index}].city" required></div>
+							   <div class="form-group"><p class="add-head"> Country: </p><input type="text" placeholder="India" value="${useradd.country}" id="country_0" maxlength="50" class="form-control add-head" name="address[${useradd?index}].country" required></div>
 							   <div class="form-group"><a href="javascript:void(0)" class="remove-item btn btn-sm btn-danger add-head remove-data" id="remove-btn">Remove</a></div>
 						</div>
 						<div class="col-md-2 col-sm-2"></div>
 						<div class="col-md-5 col-sm-5 gap right-gap">
 							   <div class="form-group">
 								<p>Address line2:</p>
-									<input type="text" maxlength="50" value="${useradd.add2}" placeholder="Address" class="form-control" name="address2" required>
+									<input type="text" maxlength="50" value="${useradd.add2}" placeholder="Address" class="form-control" name="address[${useradd?index}].add2" required>
 							   </div>
-							   <div class="form-group"><p>State:</p><input type="text" placeholder="Gujarat" maxlength="50" value="${useradd.state}" id="state_0" class="form-control" name="state" required></div>
-							   <div class="form-group"><p>Pincode:</p><input type="text" placeholder="371234" maxlength="6"  value="${useradd.pincode}" class="form-control" name="pincode" id="pincode_0" required></div>
+							   <div class="form-group"><p>State:</p><input type="text" placeholder="Gujarat" maxlength="50" value="${useradd.state}" id="state_0" class="form-control" name="address[${useradd?index}].state" required></div>
+							   <div class="form-group"><p>Pincode:</p><input type="text" placeholder="371234" maxlength="6"  value="${useradd.pincode}" class="form-control" name="address[${useradd?index}].pincode" id="pincode_0" required></div>
 					 	</div>
 				   </div>
 				</div>
@@ -156,20 +156,20 @@
 							<div class="col-md-5 col-sm-5 gap">
 								  <div class="form-group">
 									<p class="add-head">Address line1:</p>
-										<input type="text" class="form-control add-head" placeholder="Address" maxlength="50" name="address1" required>
+										<input type="text" class="form-control add-head" placeholder="Address" maxlength="50" name="address[0].add1" required>
 								   </div>
-								   <div class="form-group"><p class="add-head">City: </p><input type="text" placeholder="Ahmedabad" id="city_0" maxlength="50" class="form-control add-head" name="city" required></div>
-								   <div class="form-group"><p class="add-head"> Country: </p><input type="text" placeholder="India" id="country_0" maxlength="50" class="form-control add-head" name="country" required></div>
+								   <div class="form-group"><p class="add-head">City: </p><input type="text" placeholder="Ahmedabad" id="city_0" maxlength="50" class="form-control add-head" name="address[0].city" required></div>
+								   <div class="form-group"><p class="add-head"> Country: </p><input type="text" placeholder="India" id="country_0" maxlength="50" class="form-control add-head" name="address[0].country" required></div>
 								   <div class="form-group"><a href="javascript:void(0)" class="remove-item btn btn-sm btn-danger add-head remove-data" id="remove-btn">Remove</a></div>
 							</div>
 							<div class="col-md-2 col-sm-2"></div>
 							<div class="col-md-5 col-sm-5 gap right-gap">
 								   <div class="form-group">
 									<p>Address line2:</p>
-										<input type="text" maxlength="50" placeholder="Address" class="form-control" name="address2" required>
+										<input type="text" maxlength="50" placeholder="Address" class="form-control" name="address[0].add2" required>
 								   </div>
-								   <div class="form-group"><p>State:</p><input type="text" placeholder="Gujarat" maxlength="50" id="state_0" class="form-control" name="state" required></div>
-								   <div class="form-group"><p>Pincode:</p><input type="text" placeholder="371234" maxlength="6" class="form-control" name="pincode" id="pincode_0" required></div>
+								   <div class="form-group"><p>State:</p><input type="text" placeholder="Gujarat" maxlength="50" id="state_0" class="form-control" name="address[0].state" required></div>
+								   <div class="form-group"><p>Pincode:</p><input type="text" placeholder="371234" maxlength="6" class="form-control" name="address[0].pincode" id="pincode_0" required></div>
 						 	</div>
 					   </div>
 					</div>

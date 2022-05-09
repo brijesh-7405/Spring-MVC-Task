@@ -19,6 +19,8 @@ $(document).ready(function() {
 		 	removeConfirm:true,
 		
 		  removeConfirmMessage:'Are you sure want to delete?',
+		  
+		  regexName:  /(^.+?)([\[\d{1,}\]]{1,})(.+$)/i
 		
 		});
 	

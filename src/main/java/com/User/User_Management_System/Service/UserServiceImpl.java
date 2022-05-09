@@ -20,55 +20,72 @@ public class UserServiceImpl implements UserService{
 	private UserDao userdao;
 	@Autowired
 	private EncryptPwd encrypt;
-//		public boolean userExist(String mail)
-//		{
-//			LOG.info("User service,userExist methods call");
-//			boolean status = userdao.userExist(mail);
-//			return status;
-//		}
+	@Autowired
+	User user;
+		public boolean userExist(String mail)
+		{
+			LOG.info("User service,userExist methods call");
+			boolean status = userdao.userExist(mail);
+			return status;
+		}
 		public int registerUser(User user)
 		{
 			LOG.info("User service,registerUser methods call");
 			String pwd = encrypt.encryption(user.getPassword());
 			user.setPassword(pwd);
 			user.setRole("user");
+			List<UserAddress>  add = user.getAddress();
+			for(UserAddress a:add) 
+			{
+				a.setUser(user);
+			}
+			
+			user.setAddress(add);
 			int id = userdao.registerUser(user);
 			return id;
 		}
-//		public int getUser(String mail)
-//		{
-//			LOG.info("User service,getUser methods call");
-//			int id = userdao.getUserId(mail);
-//			return id;
-//		}
-//		public User checkUser(String email)
-//		{
-//			LOG.info("User service,checkUser methods call");
-//			User user = userdao.validUser(email);
-//			return user;
-//		}
+		public User checkUser(String email)
+		{
+			LOG.info("User service,checkUser methods call");
+			User user = userdao.validUser(email);
+			return user;
+		}
+		public void changePwd(User user) 
+		{
+			LOG.info("User service,changePwd methods call");
+			userdao.changePwd(user);
+		}
+		public List<User> getUsers()
+		{
+			LOG.info("User service,getUsers methods call");
+			List<User> userlist;
+			userlist = userdao.getUserList();
+			return userlist;
+		}
+		public void deleteUser(int userid)
+		{
+			LOG.info("User service,deleteUser methods call");
+//			User user1 = new User();
+//			user1.setUserID(userid);
+//			System.out.println();
+			userdao.deleteUser(userid);
+		}
 //		public String getRole(String mail)
 //		{
 //			LOG.info("User service,getRole methods call");
 //			String role = userdao.getRole(mail);
 //			return role;
 //		}
-//		public List<User> getUsers()
+//		public int getUser(String mail)
 //		{
-//			LOG.info("User service,getUsers methods call");
-//			List<User> userlist;
-//			userlist = userdao.getUserList();
-//			return userlist;
+//			LOG.info("User service,getUser methods call");
+//			int id = userdao.getUserId(mail);
+//			return id;
 //		}
-//		public void deleteUser(int userid)
-//		{
-//			LOG.info("User service,deleteUser methods call");
-//			userdao.deleteUser(userid);
-//		}
-//		public void changePwd(String pwd,String usermail) {
-//			LOG.info("User service,changePwd methods call");
-//			userdao.changePwd(pwd,usermail);
-//		}
+
+
+
+
 //		public void updateUserProfile(User user,int userid)
 //		{
 //			LOG.info("User service,updateUserProfile methods call");

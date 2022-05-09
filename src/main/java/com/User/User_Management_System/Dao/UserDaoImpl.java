@@ -7,6 +7,11 @@ import javax.transaction.Transactional;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.hibernate5.HibernateTemplate;
@@ -18,14 +23,12 @@ import com.User.User_Management_System.UtilityClass.ConnectionSetup;
 
 public class UserDaoImpl implements UserDao {
 	static final Logger LOG = LogManager.getLogger(UserDaoImpl.class.getName());
-	private transient  Connection con = null;
-	private transient PreparedStatement ps=null;
-	private transient UserAddressDao addressdao = new UserAddressDaoImpl();
-	private transient UserImageDao userImageDao = new UserImageDaoImpl();
 	
 	@Autowired
 	@Qualifier("hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
+	
+	String query = "from User where email=?0";
 	
 	@Transactional
 	public int registerUser(User user)
@@ -34,29 +37,91 @@ public class UserDaoImpl implements UserDao {
 		System.out.println("userid:"+id);
 		return id;
 	}
-//	/*Check user already exist or not at registration time*/
-//	public boolean userExist(String mail)
+	
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public boolean userExist(String mail)
+	{
+		boolean status=false;
+//		SessionFactory factory = hibernateTemplate.getSessionFactory();
+//		Session session = factory.openSession();
+//		@SuppressWarnings("deprecation")
+//		Criteria c = session.createCriteria(User.class);
+//		c.add(Restrictions.eq("email", mail));
+//		List list = c.list();
+			
+		//Query query=session.createQuery("from User where email=?");  
+			@SuppressWarnings("deprecation")
+			List<User> list = (List<User>) hibernateTemplate.find(query, mail);
+            if(list!=null && (list.size() > 0))
+            {
+            	status=true;
+            }
+            else
+            {
+            	 status=false;
+            }
+           
+		return status;
+	}
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public User validUser(String email)
+	{
+			User user = null;
+			@SuppressWarnings("deprecation")
+			List<User> list = (List<User>) hibernateTemplate.find(query, email);
+            if(list!=null && (list.size() > 0))
+            {
+            	user=list.get(0);
+            }
+            LOG.info("User data stored in bean");
+        return user;
+	}
+	/*Change password an added to database*/
+	@Transactional
+	public void changePwd(User user) 
+	{
+		hibernateTemplate.merge(user);
+	}
+	/* get All Users list from the database*/
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public List<User> getUserList()
+	{
+		String getUserQuery = "from User where role='user'";
+		@SuppressWarnings("deprecation")
+		List<User> list = (List<User>) hibernateTemplate.find(getUserQuery);
+		return list;
+	}
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public void deleteUser(int userid)
+	{
+		String getUserQuery = "from User where userID=?0";
+		@SuppressWarnings("deprecation")
+		List<User> list = (List<User>) hibernateTemplate.find(getUserQuery,userid);
+		hibernateTemplate.delete(list.get(0));
+	}
+	/*Get user role*/
+//	public String getRole(String mail)
 //	{
-//		boolean status=false;
+//		String role="";
 //		try 
 //        {
 //        	con=ConnectionSetup.getConnection();
-//        	ps = con.prepareStatement("select * from UserDetails where Email=?");
-//            ps.setString(1, mail);
+//        	ps = con.prepareStatement("select Role from UserDetails where Email = ?;");
+//            ps.setString(1,mail);
 //            ResultSet rs = ps.executeQuery();
 //            if(rs.next())
 //            {
-//            	status=true;
+//            	role=rs.getString(1);
+//            	LOG.info("Check Role Successful");
 //            }
-//            else
-//            {
-//            	 status=false;
-//            }
-//           
 //        }
-//        catch(Exception e)
+//		catch(Exception e)
 //        {
-//        	LOG.fatal(e);
+//			LOG.fatal(e);
 //        }
 //        finally {
 //			   try {
@@ -68,7 +133,7 @@ public class UserDaoImpl implements UserDao {
 //				   LOG.fatal(e);
 //				}
 //			   }
-//		return status;
+//		return role;
 //	}
 //	/*Register user into the database*/
 //	public void registerUser(User user)
@@ -273,71 +338,8 @@ public class UserDaoImpl implements UserDao {
 //			   }
 //		return role;
 //	}
-//	/* get All Users list from the database*/
-//	public List<User> getUserList()
-//	{
-//		List<User> list = new ArrayList<User>();
-//		 User user;
-//		 try
-//		 {
-//			con=ConnectionSetup.getConnection();
-//		  ps=((java.sql.Connection) con).prepareStatement("select UserID,FirstName,LastName,Email,Phone,DateOfBirth,Gender,LanguageKnown from UserDetails where Role='user';"); 
-//          ResultSet rs=ps.executeQuery();  
-//          while(rs.next()){  
-//        	   user=new User();  
-//	          	user.setUserID(rs.getInt(1));
-//	        	user.setFirstname(rs.getString(2));
-//	        	user.setLastname(rs.getString(3));
-//	        	user.setEmail(rs.getString(4));
-//	        	user.setPhone(rs.getLong(5));
-//	        	user.setDateofbirth(rs.getString(6));
-//	        	user.setGender(rs.getString(7));
-//	        	user.setLanguage(rs.getString(8));       	 
-//              list.add(user);  
-//          }
-//          LOG.info("UsersList Updated");
-//          rs.close();
-//		 } catch (Exception e) {
-//			 LOG.fatal(e);
-//			}
-//		 finally {
-//			   try {
-//					   if(ps!=null)
-//					   {
-//					       ps.close();
-//				       }
-//			   }catch (Exception e) {
-//				   LOG.fatal(e);
-//				}
-//			   }
-//		return list;
-//	}
-//	/*Change password an added to database*/
-//	public void changePwd(String pwd, String usermail) {
-//		try
-//		{
-//				con=ConnectionSetup.getConnection();
-//				ps=((java.sql.Connection) con).prepareStatement("update UserDetails set Password=? where Email=?;");
-//			 	ps.setString(1,pwd);
-//			 	ps.setString(2,usermail);
-//	            ps.executeUpdate();
-//	            LOG.info("Password changed and stored in database");
-//		}
-//		catch(Exception e)
-//		{
-//			LOG.fatal(e);
-//		}
-//		finally {
-//			   try {
-//					   if(ps!=null)
-//					   {
-//					       ps.close();
-//				       }
-//			   }catch (Exception e) {
-//				   LOG.fatal(e);
-//				}
-//			   }	
-//	}
+
+
 //	/*Deleting the user*/
 //	public void deleteUser(int userid)
 //	{

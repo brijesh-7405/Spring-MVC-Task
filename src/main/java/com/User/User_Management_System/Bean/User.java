@@ -3,14 +3,22 @@ import java.util.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import org.hibernate.FetchMode;
+import org.hibernate.annotations.Fetch;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 //User Bean Class
 @Entity
+@Component
+@Scope("prototype")
 public class User {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -30,10 +38,17 @@ public class User {
 	private String gender;
 	private String language;
 	private String role;
-	@Transient
-	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "user",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
 	private List<UserAddress> address;
-	
+//	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+//	private List<UserImage>  image;
+//	
+//public List<UserImage> getImage() {
+//		return image;
+//	}
+//	public void setImage(List<UserImage> image) {
+//		this.image = image;
+//	}
 public User() {
 		//super();
 		// TODO Auto-generated constructor stub
@@ -44,7 +59,6 @@ public List<UserAddress> getAddress() {
 	public void setAddress(List<UserAddress> address) {
 		this.address = address;
 	}
-	//	@Transient
 //	private ArrayList<UserImage>  image;
  	public String getLanguage() {
 		return language;
@@ -115,17 +129,5 @@ public List<UserAddress> getAddress() {
 	public void setRole(String role) {
 		this.role = role;
 	}
-//	public List<UserAddress> getAddress() {
-//		return new List<UserAddress>(this.address);
-//	}
-//	public void setAddress(ArrayList<UserAddress> address) {
-//		this.address = new ArrayList<UserAddress>(address);
-//	}
-//	public ArrayList<UserImage> getImage() {
-//		return new ArrayList<UserImage> (this.image);
-//	}
-//	public void setImage(ArrayList<UserImage> image) {
-//		this.image =  new ArrayList<UserImage>(image);
-//	}
 
 }
