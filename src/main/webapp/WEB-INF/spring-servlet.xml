@@ -104,4 +104,6 @@
 		name="userservice" />
 	<bean class="com.User.User_Management_System.Dao.UserDaoImpl"
 		name="userdao" />
+		<bean class="com.User.User_Management_System.Dao.UserAddressDaoImpl"
+		name="useraddressdao" />
 </beans>

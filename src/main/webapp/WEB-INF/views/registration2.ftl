@@ -35,7 +35,7 @@
 					 	 <span id="error"></span>
 					 </div>
 					 <div class="form-group">
-					 	 Password:<input type="password" placeholder="Enter Password" <#if faildata ??>value="${faildata.password!}"</#if> maxlength="50" id="pwd" class="form-control" name="password" required>
+					 	 Password:<input type="password" placeholder="Enter Password" maxlength="14" minlength="5" <#if faildata ??>value="${faildata.password!}"</#if> maxlength="50" id="pwd" class="form-control" name="password" required>
 					 </div>
 					 <div class="form-group">
 						 Confirm password:<input type="password" name="repass" id="repwd" class="form-control" maxlength="50" placeholder="Enter Confirm Password" required>
@@ -55,7 +55,7 @@
 			<div class="col-md-2"></div>
 			<div class="col-md-5">
 				 <div class="form-group">
-					Phone:<input type="text" name="phone" maxlength="10" <#if user ??>value="${user.phone?string.computer}"</#if>  <#if faildata ??>value="${faildata.phone?string.computer}"</#if> size="10" id="phone" class="form-control" placeholder="Enter Phone Number" required>
+					Phone:<input type="number" name="phone" minlength="10" <#if user ??>value="${user.phone?string.computer}"</#if>  <#if faildata ??>value="${faildata.phone?string.computer}"</#if> size="10" id="phone" class="form-control" placeholder="Enter Phone Number" required>
 				 </div>
 				 <div class="form-group">
 				 	Date of Birth: <input type="date" id="dob" class="form-control" <#if user ??>value="${user.dateofbirth!}"</#if> <#if faildata ??>value="${faildata.dateofbirth!}"</#if> name="dateofbirth" required>
@@ -64,9 +64,9 @@
 					 <div class="form-group">
 					 	Gender:
 					   <div class="radio checked-radio">
-					  	    <label class="radio-inline"><input type="radio" name="Gender"  value="Male" <#if faildata ?? && faildata=='Male'> checked </#if>>Male</label>
-						 	<label class="radio-inline"><input type="radio" name="Gender" value="Female" <#if faildata ?? && faildata=='Female'> checked </#if>>Female</label>
-							<label class="radio-inline"><input type="radio" name="Gender" value="Transgender" <#if faildata ?? && faildata=='Transgender'> checked </#if>>Transgender</label>
+					  	    <label class="radio-inline"><input type="radio" name="Gender"  value="Male" <#if faildata ?? && faildata.gender?? && faildata.gender=='Male'> checked </#if>>Male</label>
+						 	<label class="radio-inline"><input type="radio" name="Gender" value="Female" <#if faildata ?? && faildata.gender?? && faildata.gender=='Female'> checked </#if>>Female</label>
+							<label class="radio-inline"><input type="radio" name="Gender" value="Transgender" <#if faildata ?? && faildata.gender?? && faildata.gender=='Transgender'> checked </#if>>Transgender</label>
 						</div>
 					 </div>
 				</#if>
@@ -74,19 +74,19 @@
 				 	Language Known:
 				 	<div class="checkbox checked-checkbox">
 				 		   <label class="checkbox-inline" for="eng">
-				 	        	<input type="checkbox" name="language" id="eng" <#if user ?? && user.language?contains("English")>checked</#if> <#if faildata ?? && faildata.language?contains("English")>checked</#if> value="English">
+				 	        	<input type="checkbox" name="language" id="eng" <#if user ?? && user.language?? && user.language?contains("English")>checked</#if> <#if faildata ?? && faildata.language ?? && faildata.language?contains("English")>checked</#if> value="English">
 						   English
 						   </label>
 						   <label class="checkbox-inline" for="hindi">
-								<input type="checkbox" name="language" id="hindi" <#if user ?? && user.language?contains("Hindi")>checked</#if>  <#if faildata ?? && faildata.language?contains("Hindi")>checked</#if> value="Hindi">
+								<input type="checkbox" name="language" id="hindi" <#if user ?? && user.language?? && user.language?contains("Hindi")>checked</#if>  <#if faildata ?? && faildata.language ?? && faildata.language?contains("Hindi")>checked</#if> value="Hindi">
 							Hindi
 							</label>
 							<label class="checkbox-inline" for="guj">
-								<input type="checkbox" name="language" id="guj" <#if user ?? && user.language?contains("Gujarati")>checked</#if> <#if faildata ?? && faildata.language?contains("Gujarati")>checked</#if>  value="Gujarati">
+								<input type="checkbox" name="language" id="guj" <#if user ?? && user.language?? && user.language?contains("Gujarati")>checked</#if> <#if faildata ?? && faildata.language ?? && faildata.language?contains("Gujarati")>checked</#if>  value="Gujarati">
 							Gujarati
 							</label>
 							<label class="checkbox-inline" for="chi">
-								<input type="checkbox" name="language" id="chi" <#if user ?? && user.language?contains("Chinese")>checked</#if> <#if faildata ?? && faildata.language?contains("Chinese")>checked</#if>  value="Chinese">
+								<input type="checkbox" name="language" id="chi" <#if user ?? && user.language?? && user.language?contains("Chinese")>checked</#if> <#if faildata ?? && faildata.language ?? && faildata.language?contains("Chinese")>checked</#if>  value="Chinese">
 							Chinese
 							</label>
 				    </div>

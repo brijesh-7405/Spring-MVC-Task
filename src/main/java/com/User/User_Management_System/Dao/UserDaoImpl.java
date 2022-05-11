@@ -2,13 +2,11 @@ package com.User.User_Management_System.Dao;
 
 import java.sql.*;
 import java.util.*;
-
 import javax.transaction.Transactional;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -19,39 +17,27 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 import com.User.User_Management_System.Bean.User;
 import com.User.User_Management_System.Bean.UserAddress;
 import com.User.User_Management_System.Bean.UserImage;
-import com.User.User_Management_System.UtilityClass.ConnectionSetup;
 
-public class UserDaoImpl implements UserDao {
+public class UserDaoImpl extends GenericDaoImpl<User> implements UserDao {
 	static final Logger LOG = LogManager.getLogger(UserDaoImpl.class.getName());
 	
 	@Autowired
-	@Qualifier("hibernateTemplate")
 	private HibernateTemplate hibernateTemplate;
 	
 	String query = "from User where email=?0";
 	
-	@Transactional
-	public int registerUser(User user)
-	{
-		int id = (int) hibernateTemplate.save(user);
-		System.out.println("userid:"+id);
-		return id;
-	}
+//	@Transactional
+//	public int registerUser(User user)
+//	{
+//		int id = (int) hibernateTemplate.save(user);
+//		return id;
+//	}
 	
-	@SuppressWarnings("unchecked")
 	@Transactional
 	public boolean userExist(String mail)
 	{
-		boolean status=false;
-//		SessionFactory factory = hibernateTemplate.getSessionFactory();
-//		Session session = factory.openSession();
-//		@SuppressWarnings("deprecation")
-//		Criteria c = session.createCriteria(User.class);
-//		c.add(Restrictions.eq("email", mail));
-//		List list = c.list();
-			
-		//Query query=session.createQuery("from User where email=?");  
-			@SuppressWarnings("deprecation")
+		boolean status=false; 
+			@SuppressWarnings({ "deprecation", "unchecked" })
 			List<User> list = (List<User>) hibernateTemplate.find(query, mail);
             if(list!=null && (list.size() > 0))
             {
@@ -64,12 +50,11 @@ public class UserDaoImpl implements UserDao {
            
 		return status;
 	}
-	@SuppressWarnings("unchecked")
 	@Transactional
 	public User validUser(String email)
 	{
 			User user = null;
-			@SuppressWarnings("deprecation")
+			@SuppressWarnings({ "deprecation", "unchecked" })
 			List<User> list = (List<User>) hibernateTemplate.find(query, email);
             if(list!=null && (list.size() > 0))
             {
@@ -85,53 +70,52 @@ public class UserDaoImpl implements UserDao {
 		hibernateTemplate.merge(user);
 	}
 	/* get All Users list from the database*/
-	@SuppressWarnings("unchecked")
 	@Transactional
 	public List<User> getUserList()
 	{
 		String getUserQuery = "from User where role='user'";
-		@SuppressWarnings("deprecation")
+		@SuppressWarnings({ "deprecation", "unchecked" })
 		List<User> list = (List<User>) hibernateTemplate.find(getUserQuery);
 		return list;
 	}
 	/*Get user all details*/
-	@SuppressWarnings("unchecked")
-	public User getUserDetails(int userid)
-	{
-		User user = null;
-		String getUserQuery = "from User where userID=?0";
-		@SuppressWarnings("deprecation")
-		List<User> list = (List<User>) hibernateTemplate.find(getUserQuery,userid);
-        if(list!=null && (list.size() > 0))
-        {
-        	user=list.get(0);
-        }
-        return user;
-	}
-	@SuppressWarnings("unchecked")
-	@Transactional
-	public void deleteUser(User user)
-	{
-		hibernateTemplate.delete(user);
-	}
-	@SuppressWarnings("unchecked")
+//	public User getUserDetails(int userid)
+//	{
+//		String getUserQuery = "from User where userID=?0";
+//		User user = (User) hibernateTemplate.get(getUserQuery,userid);
+//		//User user = null;
+//		hibernateTemplate.get(, getUserQuery)
+//		@SuppressWarnings({ "deprecation", "unchecked" })
+//		List<User> list = (List<User>) hibernateTemplate.find(getUserQuery,userid);
+//        if(list!=null && (list.size() > 0))
+//        {
+//        	user=list.get(0);
+//        }
+//        return user;
+//	}
+//	@Transactional
+//	public void deleteUser(User user)
+//	{
+//		hibernateTemplate.delete(user);
+//	}
 	@Transactional
 	public List<UserAddress> getUserAddress(int userid)
 	{
 		String getUserQuery = "from UserAddress where user_userID=?0";
+		@SuppressWarnings({ "unchecked", "deprecation" })
 		List<UserAddress> list = (List<UserAddress>) hibernateTemplate.find(getUserQuery,userid);
 		return list;
 	}
-	@Transactional
-	public void deleteAddress(UserAddress address)
-	{
-		hibernateTemplate.delete(address);
-	}
-	@Transactional
-	public void update(User user)
-	{
-		hibernateTemplate.merge(user);
-	}
+//	@Transactional
+//	public void deleteAddress(UserAddress address)
+//	{
+//		hibernateTemplate.delete(address);
+//	}
+//	@Transactional
+//	public void update(User user)
+//	{
+//		hibernateTemplate.merge(user);
+//	}
 	/*Get user role*/
 //	public String getRole(String mail)
 //	{

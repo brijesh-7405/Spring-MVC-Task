@@ -6,7 +6,7 @@ import com.User.User_Management_System.Bean.UserAddress;
 import java.util.*;
 public interface UserService{
 	public boolean userExist(String mail);
-	public int registerUser(User user);
+	public void registerUser(User user);
 //	public int getUser(String mail);
 	public User checkUser(String email);
 //	public String getRole(String mail);

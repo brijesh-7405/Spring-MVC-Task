@@ -9,6 +9,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.hibernate.FetchMode;
 import org.hibernate.annotations.Fetch;
@@ -29,16 +34,41 @@ public class User {
 	public void setUserID(int userID) {
 		this.userID = userID;
 	}
-	private String firstname;
-	private String lastname;
-	private String email;
 	private long phone;
+	@NotEmpty(message="*Firstname is required")
+	@Pattern(regexp="[a-zA-Z]+",message="*Only Alphabets are Allowed in FirstName.")
+	private String firstname;
+	
+	@NotEmpty(message="*Lastname is required")
+	@Pattern(regexp="[a-zA-Z]+",message="*Only Alphabets are Allowed in LastName.")
+	private String lastname;
+	
+	@NotEmpty(message="*Email is required")
+	@Pattern(regexp="^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" 
+	        + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$",message="*Please Enter Valid Email-Id.")
+	
+	private String email;
+	
+	@NotEmpty(message="*Password is required")
+//	@Pattern(regexp="^(?=.*[0-9])"
+//            + "(?=.*[a-z])(?=.*[A-Z])"
+//            + "(?=.*[@#$%^&+=])"
+//            + "(?=\\S+$).{8,20}$",message="*Please Choose Strong Password.")
+//	@Size(min=5,max=14,message="*Password must be 5 to 14 character")
 	private String password;
+	
+	@NotEmpty(message="*DateofBirth is required")
 	private String dateofbirth;
+	
+	@NotEmpty(message="*Gender is required")
 	private String gender;
+	
+	@NotEmpty(message="*Language is required")
 	private String language;
+	
 	private String role;
 	@OneToMany(mappedBy = "user",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+	@Valid
 	private List<UserAddress> address;
 //	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 //	private List<UserImage>  image;

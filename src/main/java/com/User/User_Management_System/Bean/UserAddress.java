@@ -6,6 +6,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -26,11 +29,18 @@ public class UserAddress {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int addressid;
+	@NotEmpty(message="*Address feild is required")
 	private String add1;
+	@NotEmpty(message="*Address feild is required")
 	private String add2;
+	@NotEmpty(message="*City is required")
 	private String city;
+	@NotEmpty(message="*State is required")
 	private String state;
+	@NotEmpty(message="*Country is required")
 	private String country;
+	@NotEmpty(message="*Pincode is required")
+	@Pattern(regexp="^[0-9]+$",message="*Only Numbers are Allowed in Pincode.")
 	private String pincode;
 	@ManyToOne
 	private User user;

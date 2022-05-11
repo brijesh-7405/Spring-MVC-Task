@@ -19,6 +19,9 @@ public class UserServiceImpl implements UserService{
 	@Qualifier("userdao")
 	private UserDao userdao;
 	@Autowired
+	@Qualifier("useraddressdao")
+	private UserAddressDao useraddressdao;
+	@Autowired
 	private EncryptPwd encrypt;
 	@Autowired
 	User user;
@@ -28,7 +31,7 @@ public class UserServiceImpl implements UserService{
 			boolean status = userdao.userExist(mail);
 			return status;
 		}
-		public int registerUser(User user)
+		public void registerUser(User user)
 		{
 			LOG.info("User service,registerUser methods call");
 			String pwd = encrypt.encryption(user.getPassword());
@@ -46,8 +49,8 @@ public class UserServiceImpl implements UserService{
 //				image.setUser(user);
 //			}
 //			user.setImage(img);
-			int id = userdao.registerUser(user);
-			return id;
+			userdao.create(user);
+			//return id;
 		}
 		public User checkUser(String email)
 		{
@@ -70,8 +73,8 @@ public class UserServiceImpl implements UserService{
 		public void deleteUser(int userid)
 		{
 			LOG.info("User service,deleteUser methods call");
-			User user = userdao.getUserDetails(userid);
-			userdao.deleteUser(user);
+			User user = userdao.find(userid);
+			userdao.delete(user);
 		}
 		public void updateUserProfile(User user)
 		{
@@ -81,15 +84,13 @@ public class UserServiceImpl implements UserService{
 			{
 				a.setUser(user);
 			}
-			System.out.println("sevcdscdd"+user.getUserID());
-			System.out.println("Sercivc:"+add);
 			user.setAddress(add);
 			userdao.update(user);
 		}
 		public User getUserDetails(int userID)
 		{
 			LOG.info("User service,getUserDetails methods call");
-			User user = userdao.getUserDetails(userID);
+			User user = userdao.find(userID);
 			return user;
 		}
 		public List<UserAddress> getUserAddress(int userid)
@@ -101,7 +102,7 @@ public class UserServiceImpl implements UserService{
 		public void deleteAddress(UserAddress address)
 		{
 			LOG.info("User Address service,deleteAddress methods call");
-			userdao.deleteAddress(address);
+			useraddressdao.delete(address);
 		}
 		
 //		public String getRole(String mail)

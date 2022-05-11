@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
+import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.LogManager;
@@ -28,6 +29,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MimeTypeUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,12 +45,11 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.User.User_Management_System.Bean.User;
 import com.User.User_Management_System.Bean.UserAddress;
 import com.User.User_Management_System.Bean.UserImage;
-import com.User.User_Management_System.Service.UserAddressService;
-import com.User.User_Management_System.Service.UserAddressServiceImpl;
 import com.User.User_Management_System.Service.UserImageService;
 import com.User.User_Management_System.Service.UserImageServiceImpl;
 import com.User.User_Management_System.Service.UserService;
 import com.User.User_Management_System.Service.UserServiceImpl;
+import com.User.User_Management_System.UtilityClass.CheckValidation;
 import com.User.User_Management_System.UtilityClass.EncryptPwd;
 import com.User.User_Management_System.UtilityClass.Validation;
 
@@ -60,7 +62,7 @@ public class SpringMVCController{
 	@Autowired
 	private EncryptPwd encrypt;
 	@Autowired
-	private Validation validate;
+	private CheckValidation val;
 	@Autowired
 	UserAddress useraddress;
 	
@@ -79,21 +81,53 @@ public class SpringMVCController{
 	{
 		return "forgotpwd";
 	}
-	@SuppressWarnings("null")
 	@PostMapping(path="/UserRegistration", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-	public String registerUser(@ModelAttribute User  user,Model model,HttpSession session,@RequestParam("image[]") CommonsMultipartFile[] files,HttpServletRequest request,@RequestParam("repass") String repass) throws IOException, ServletException
+	public String registerUser(@Valid @ModelAttribute User  user,BindingResult br,Model model,HttpSession session,@RequestParam("image[]") CommonsMultipartFile[] files,HttpServletRequest request,@RequestParam("repass") String repass) throws IOException, ServletException
 	{
-		String message = validate.validData(user,repass);
-		if(!message.equals("validData"))
-		{
-			model.addAttribute("message",message);
+		String msg="";
+		if(br.hasErrors())  
+        { 
+			List<FieldError> error =br.getFieldErrors();
+			String errors ="";
+			for(FieldError err: error)
+			{
+				errors += err.getDefaultMessage() + "<br>";
+			}
+			model.addAttribute("message",errors);
 			model.addAttribute("faildata",user);
-			System.out.println("jajaanot valiud");
+			return "registration2";
+        }
+		else if(userservice.userExist(user.getEmail()))
+		{
+			LOG.info("*Email already exist");
+			msg= "*Email already exist";
+			model.addAttribute("message",msg);
+			model.addAttribute("faildata",user);
+			return "registration2";
+		}
+		else if(String.valueOf(user.getPhone()).length()<10)
+		{
+			msg= "*Number not less than 10 Digits";
+			model.addAttribute("message",msg);
+			model.addAttribute("faildata",user);
+			return "registration2";
+		}
+		else if(val.validatepwd(user.getPassword()))
+		{
+			msg="*Please Choose Strong Password.";
+			model.addAttribute("message",msg);
+			model.addAttribute("faildata",user);
+			return "registration2";
+		}
+		else if(!user.getPassword().equals(repass))
+		{
+			msg= "*Confirm password Should be same as Password.";
+			model.addAttribute("message",msg);
+			model.addAttribute("faildata",user);
 			return "registration2";
 		}
 		else
 		{
-			System.out.println("valid");
 //		List<UserImage> userimg = new ArrayList<UserImage>();
 //		InputStream inputStream = null;
 //		UserImage img=null;
@@ -120,13 +154,6 @@ public class SpringMVCController{
 //        }
 //        user.setImage(userimg);
 //		System.out.println(user.getImage());
-		if(userservice.userExist(user.getEmail()))
-		{
-			LOG.info("*Email already exist");
-			return "registration2";
-		}
-		else
-		{
 //			List<UserImage> userimg = new ArrayList<UserImage>();
 //			UserImage img=null;
 //			if (files != null && files.length > 0) 
@@ -140,8 +167,7 @@ public class SpringMVCController{
 //	            }
 //	        }
 //			user.setImage(userimg);
-			int id = userservice.registerUser(user);
-			System.out.println("idansan"+id);
+			userservice.registerUser(user);
 			session=request.getSession(false);
 	        if(session.getAttribute("USER") != null)           
 	        {
@@ -154,7 +180,6 @@ public class SpringMVCController{
 	        }
 		}
 		
-		}
 	}
 	@RequestMapping(value = "/CheckUserExistDone", method = RequestMethod.POST)
 	@ResponseBody
@@ -317,8 +342,24 @@ public class SpringMVCController{
 		}
 	}
 	@PostMapping(path="/EditServlet", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-	public String edit(@ModelAttribute User  user,HttpSession session,@RequestParam("image[]") MultipartFile[] files,HttpServletRequest request,@RequestParam("addressid") String [] addressid)
+	public String edit(@ModelAttribute User  user,BindingResult br,Model model,HttpSession session,@RequestParam("image[]") MultipartFile[] files,HttpServletRequest request,@RequestParam("addressid") String [] addressid)
 	{
+//		if(br.hasErrors())  
+//        { 
+//			System.out.println("nmxnmxcnxm");
+//			List<FieldError> error =br.getFieldErrors();
+//			String errors ="";
+//			for(FieldError err: error)
+//			{
+//				errors += err.getDefaultMessage() + "<br>";
+//				System.out.println("error: "+err);
+//			}
+//			model.addAttribute("message",errors);
+//			model.addAttribute("user",user);
+//			return "registration2";
+//        }
+//		else
+		{
 		User oldUser = userservice.getUserDetails(user.getUserID());
 		user.setAnswer1(oldUser.getAnswer1());
 		user.setAnswer2(oldUser.getAnswer2());
@@ -397,6 +438,7 @@ public class SpringMVCController{
 //		}
         
         return "redirect:UserData";
+		}
 	}
 	@RequestMapping("/UserData")
 	public String userData(HttpServletRequest request,HttpSession session) 
