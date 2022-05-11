@@ -39,8 +39,13 @@ public class UserServiceImpl implements UserService{
 			{
 				a.setUser(user);
 			}
-			
 			user.setAddress(add);
+//			List<UserImage>  img = user.getImage();
+//			for(UserImage image:img) 
+//			{
+//				image.setUser(user);
+//			}
+//			user.setImage(img);
 			int id = userdao.registerUser(user);
 			return id;
 		}
@@ -65,11 +70,40 @@ public class UserServiceImpl implements UserService{
 		public void deleteUser(int userid)
 		{
 			LOG.info("User service,deleteUser methods call");
-//			User user1 = new User();
-//			user1.setUserID(userid);
-//			System.out.println();
-			userdao.deleteUser(userid);
+			User user = userdao.getUserDetails(userid);
+			userdao.deleteUser(user);
 		}
+		public void updateUserProfile(User user)
+		{
+			LOG.info("User service,updateUserProfile methods call");
+			List<UserAddress>  add = user.getAddress();
+			for(UserAddress a:add) 
+			{
+				a.setUser(user);
+			}
+			System.out.println("sevcdscdd"+user.getUserID());
+			System.out.println("Sercivc:"+add);
+			user.setAddress(add);
+			userdao.update(user);
+		}
+		public User getUserDetails(int userID)
+		{
+			LOG.info("User service,getUserDetails methods call");
+			User user = userdao.getUserDetails(userID);
+			return user;
+		}
+		public List<UserAddress> getUserAddress(int userid)
+		{
+			LOG.info("User Address service,getUserAddress methods call");
+			List<UserAddress> useraddlist = userdao.getUserAddress(userid);
+			return useraddlist;
+		}
+		public void deleteAddress(UserAddress address)
+		{
+			LOG.info("User Address service,deleteAddress methods call");
+			userdao.deleteAddress(address);
+		}
+		
 //		public String getRole(String mail)
 //		{
 //			LOG.info("User service,getRole methods call");

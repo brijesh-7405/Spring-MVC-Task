@@ -15,6 +15,7 @@ import javax.servlet.annotation.WebFilter;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.User.User_Management_System.Bean.User;
 import com.User.User_Management_System.Bean.UserAddress;
@@ -25,12 +26,13 @@ import com.User.User_Management_System.UtilityClass.CheckValidation;
 //@WebFilter(urlPatterns={"/UserRegistration"})
 public class Validation implements Filter {
 	static final Logger LOG = LogManager.getLogger(Validation.class.getName());
-	private transient CheckValidation  val;
-	private transient UserService userservice;
-	public void init(FilterConfig fConfig) throws ServletException {
-		val = new CheckValidation();
-		userservice = new UserServiceImpl();
-	}
+	@Autowired
+	private CheckValidation  val;
+	@Autowired
+	private UserService userservice;
+	@Autowired
+	private User user;
+	public void init(FilterConfig fConfig) throws ServletException {}
 	
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		LOG.info("Validation filter call");
@@ -41,19 +43,18 @@ public class Validation implements Filter {
 		String phone=request.getParameter("phone");
 		String pwd=request.getParameter("password");
 		String repwd=request.getParameter("repass");
-		String birthdate=request.getParameter("birthdate");
-		String ans1=request.getParameter("q1");
-		String ans2=request.getParameter("q2");
+		String birthdate=request.getParameter("dateofbirth");
+		String ans1=request.getParameter("answer1");
+		String ans2=request.getParameter("answer2");
 		String gender=request.getParameter("Gender");
-		String address1[]=request.getParameterValues("address1");
-		String address2[]=request.getParameterValues("address2");
+		String address1[]=request.getParameterValues("add1");
+		String address2[]=request.getParameterValues("add2");
 		String[] pincode=request.getParameterValues("pincode");
 		String[] city=request.getParameterValues("city");
 		String[] state=request.getParameterValues("state");
 		String[] country=request.getParameterValues("country");
-		String language[]=request.getParameterValues("lang");
-    
-		User user = new User();
+		String language[]=request.getParameterValues("language");
+		
 		user.setFirstname(fname);
 		user.setLastname(lname);
 		user.setEmail(email);
@@ -97,7 +98,7 @@ public class Validation implements Filter {
 		}
 		user.setAddress(list);
 		RequestDispatcher rd=request.getRequestDispatcher("registration.jsp"); 
-		request.setAttribute("formdata", user);
+		request.setAttribute("faildata", user);
 		
 		boolean validate=true;
 		if(fname.equals("")||pwd.equals("")||lname.equals("")||email.equals("")||phone.equals("")||repwd.equals("")||birthdate.equals("")||ans1.equals("")||ans2.equals("")||gender.equals(""))

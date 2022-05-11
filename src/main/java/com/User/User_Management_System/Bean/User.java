@@ -40,7 +40,7 @@ public class User {
 	private String role;
 	@OneToMany(mappedBy = "user",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
 	private List<UserAddress> address;
-//	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+//	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 //	private List<UserImage>  image;
 //	
 //public List<UserImage> getImage() {

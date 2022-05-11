@@ -1,6 +1,7 @@
 package com.User.User_Management_System.Bean;
 
 import java.io.InputStream;
+import java.util.Arrays;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,6 +24,7 @@ public class UserImage {
 	public void setImgbytes(byte[] imgbytes) {
 		this.imgbytes = imgbytes;
 	}
+	@Transient
 	private String base64Image;
 	@ManyToOne
 	private User user;
@@ -49,5 +51,6 @@ public class UserImage {
 	}
 	public void setImgid(int imgid) {
 		this.imgid = imgid;
-	}	
+	}
+	
 }

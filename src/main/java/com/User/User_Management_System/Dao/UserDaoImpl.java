@@ -94,14 +94,43 @@ public class UserDaoImpl implements UserDao {
 		List<User> list = (List<User>) hibernateTemplate.find(getUserQuery);
 		return list;
 	}
+	/*Get user all details*/
 	@SuppressWarnings("unchecked")
-	@Transactional
-	public void deleteUser(int userid)
+	public User getUserDetails(int userid)
 	{
+		User user = null;
 		String getUserQuery = "from User where userID=?0";
 		@SuppressWarnings("deprecation")
 		List<User> list = (List<User>) hibernateTemplate.find(getUserQuery,userid);
-		hibernateTemplate.delete(list.get(0));
+        if(list!=null && (list.size() > 0))
+        {
+        	user=list.get(0);
+        }
+        return user;
+	}
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public void deleteUser(User user)
+	{
+		hibernateTemplate.delete(user);
+	}
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public List<UserAddress> getUserAddress(int userid)
+	{
+		String getUserQuery = "from UserAddress where user_userID=?0";
+		List<UserAddress> list = (List<UserAddress>) hibernateTemplate.find(getUserQuery,userid);
+		return list;
+	}
+	@Transactional
+	public void deleteAddress(UserAddress address)
+	{
+		hibernateTemplate.delete(address);
+	}
+	@Transactional
+	public void update(User user)
+	{
+		hibernateTemplate.merge(user);
 	}
 	/*Get user role*/
 //	public String getRole(String mail)

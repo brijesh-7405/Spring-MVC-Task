@@ -1,6 +1,7 @@
 package com.User.User_Management_System.Service;
 
 import com.User.User_Management_System.Bean.User;
+import com.User.User_Management_System.Bean.UserAddress;
 
 import java.util.*;
 public interface UserService{
@@ -12,6 +13,9 @@ public interface UserService{
 	public List<User> getUsers();
 	public void deleteUser(int userid);
 	public void changePwd(User user);
-//	public void updateUserProfile(User user,int userid);
-//	public User getUserDetails(int userid);
+	public void updateUserProfile(User user);
+	//public User getUserDetails(int userid);
+	public User getUserDetails(int userID);
+	public List<UserAddress> getUserAddress(int userid);
+	public void deleteAddress(UserAddress address);
 }

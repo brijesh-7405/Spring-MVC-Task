@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.User.User_Management_System.Bean.User;
 import com.User.User_Management_System.Bean.UserAddress;
@@ -48,6 +49,7 @@ import com.User.User_Management_System.Service.UserImageServiceImpl;
 import com.User.User_Management_System.Service.UserService;
 import com.User.User_Management_System.Service.UserServiceImpl;
 import com.User.User_Management_System.UtilityClass.EncryptPwd;
+import com.User.User_Management_System.UtilityClass.Validation;
 
 @Controller
 public class SpringMVCController{
@@ -57,6 +59,10 @@ public class SpringMVCController{
 	private UserService userservice;
 	@Autowired
 	private EncryptPwd encrypt;
+	@Autowired
+	private Validation validate;
+	@Autowired
+	UserAddress useraddress;
 	
 	@RequestMapping({"/","/index"})
 	public String index()
@@ -75,14 +81,19 @@ public class SpringMVCController{
 	}
 	@SuppressWarnings("null")
 	@PostMapping(path="/UserRegistration", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-	public String registerUser(@ModelAttribute User  user,HttpSession session,@RequestParam("image[]") MultipartFile[] files,HttpServletRequest request) throws IOException, ServletException
+	public String registerUser(@ModelAttribute User  user,Model model,HttpSession session,@RequestParam("image[]") CommonsMultipartFile[] files,HttpServletRequest request,@RequestParam("repass") String repass) throws IOException, ServletException
 	{
-//		@SuppressWarnings({ "unchecked", "rawtypes" })
-//		ArrayList<Part> fileParts = (ArrayList) request.getParts().stream().filter(new Predicate<Part>() {
-//			public boolean test(Part part) {
-//			return "image[]".equals(part.getName()) && part.getSize() > 0;       //it scan all the fields of form but only return the images added into the uploader
-//		}
-//		}).collect(Collectors.toList()); 
+		String message = validate.validData(user,repass);
+		if(!message.equals("validData"))
+		{
+			model.addAttribute("message",message);
+			model.addAttribute("faildata",user);
+			System.out.println("jajaanot valiud");
+			return "registration2";
+		}
+		else
+		{
+			System.out.println("valid");
 //		List<UserImage> userimg = new ArrayList<UserImage>();
 //		InputStream inputStream = null;
 //		UserImage img=null;
@@ -116,6 +127,19 @@ public class SpringMVCController{
 		}
 		else
 		{
+//			List<UserImage> userimg = new ArrayList<UserImage>();
+//			UserImage img=null;
+//			if (files != null && files.length > 0) 
+//			{
+//	            for (CommonsMultipartFile aFile : files)
+//	            {
+//	                  
+//	                System.out.println("Saving file: " + aFile.getOriginalFilename());
+//	                img.setImgbytes(aFile.getBytes());
+//	                userimg.add(img);              
+//	            }
+//	        }
+//			user.setImage(userimg);
 			int id = userservice.registerUser(user);
 			System.out.println("idansan"+id);
 			session=request.getSession(false);
@@ -130,7 +154,7 @@ public class SpringMVCController{
 	        }
 		}
 		
-	
+		}
 	}
 	@RequestMapping(value = "/CheckUserExistDone", method = RequestMethod.POST)
 	@ResponseBody
@@ -275,7 +299,7 @@ public class SpringMVCController{
 	{
 		session=request.getSession(false);
 		User user = (User) session.getAttribute("USER");
-		RequestDispatcher rf=request.getRequestDispatcher("registration.jsp");
+		System.out.println(user.getRole());
 		if(user.getRole().equals("user"))
 		{
 			model.addAttribute("user",user);					//if role is user then store the user from session in request attribute
@@ -284,12 +308,113 @@ public class SpringMVCController{
 		}
 		else
 		{
-//			String uid = request.getParameter("userid");
-//			int userid = Integer.parseInt(uid);
-//			User usr = userservice.getUserDetails(userid);      //else get the particular user from the user id which edit part is on Admin hand
-//			model.addAttribute("user", usr);
-//			LOG.info("Updated User stored in Request");
+			String uid = request.getParameter("userid");
+			int userid = Integer.parseInt(uid);
+			User usr = userservice.getUserDetails(userid);      //else get the particular user from the user id which edit part is on Admin hand
+			model.addAttribute("user", usr);
+			LOG.info("Updated User stored in Request");
 			return "registration2";
+		}
+	}
+	@PostMapping(path="/EditServlet", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	public String edit(@ModelAttribute User  user,HttpSession session,@RequestParam("image[]") MultipartFile[] files,HttpServletRequest request,@RequestParam("addressid") String [] addressid)
+	{
+		User oldUser = userservice.getUserDetails(user.getUserID());
+		user.setAnswer1(oldUser.getAnswer1());
+		user.setAnswer2(oldUser.getAnswer2());
+		user.setEmail(oldUser.getEmail());
+		user.setPassword(oldUser.getPassword());
+		user.setRole(oldUser.getRole());
+		
+		List<UserAddress> useraddresses =userservice.getUserAddress(user.getUserID());
+		int index=0;
+		int oldAddressid[] = new int[useraddresses.size()];
+		int addressIdLength= addressid.length;
+		int count=0;
+		for(UserAddress ud:useraddresses)
+		{	
+			oldAddressid[index]=ud.getAddressid();
+			if(count<addressIdLength && addressid[count].length()!=0)
+			{
+				int addrssid=Integer.parseInt(addressid[count]);
+				if(oldAddressid[index]==addrssid)
+				{
+					count++;
+				}
+				else
+				{
+					LOG.debug("Address deleted");
+					userservice.deleteAddress(ud);     //user Address deleted
+				}
+			}
+			else
+			{
+				LOG.debug("Address deleted");
+				userservice.deleteAddress(ud);   //user Address deleted
+			}
+			index++;
+		}
+		System.out.println("User address:: "+useraddresses);
+		List<UserAddress> addresslist = user.getAddress() ;
+		for(int i=0;i<addressid.length;i++)
+		{	
+			if(addressid[i].length()==0 || addressid[i].equals("0"))     
+			{
+				//add new address of the user in address table
+				addresslist.get(i).setAddressid(0);
+				LOG.debug("New Address added");
+			}
+			else
+			{
+				//Update  the User Address of the particular Address Id
+ 				int addrssid=Integer.parseInt(addressid[i]);
+ 				addresslist.get(i).setAddressid(addrssid);
+				LOG.debug("Address Updated");
+			}
+		}
+		user.setAddress(addresslist);
+		System.out.println("Controller: "+user.getAddress());
+		userservice.updateUserProfile(user); //user profile updated
+//		//Image Addition to the user
+//		try 
+//		{
+//	    InputStream inputStream;
+//		UserImage userimg;
+//        for (MultipartFile filePart : files) {
+//            if (filePart != null && filePart.getSize() != 0) {
+//            	 userimg = new UserImage();
+//                inputStream = filePart.getInputStream();
+//                userimg.setUserid(userid);
+//                userimg.setImage(inputStream);
+//                userImageService.addUserImg(userimg);
+//                LOG.debug("New Images added");
+//            }
+//        }
+//		}
+//		catch(Exception e)
+//		{
+//			System.out.println(e);
+//		}
+        
+        return "redirect:UserData";
+	}
+	@RequestMapping("/UserData")
+	public String userData(HttpServletRequest request,HttpSession session) 
+	{
+		LOG.debug("Enter in userdata servlet");
+		session=request.getSession(false);             //Getting session
+		User user = (User) session.getAttribute("USER"); 			 //Getting session attribute
+		if(user.getRole().equals("admin"))							//Check the role of the user if admin then redirect to his Servlet
+		{
+			LOG.info("Admin is in Session");
+			return "redirect:AdminWork";
+		}
+		else														//If the  role of the user is user then update the user details in the database and then stored that updated user in session  
+		{
+			user = userservice.checkUser(user.getEmail());
+			session.setAttribute("USER", user);
+			LOG.info("Updated User - stored in session");
+			return "redirect:userDashBoard";
 		}
 	}
 }

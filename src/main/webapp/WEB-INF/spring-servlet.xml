@@ -40,7 +40,10 @@
 		<property name="suffix" value=".ftl" />
 	</bean>
 	<bean id="multipartResolver"
-		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		 <!-- max upload size in bytes -->
+        <property name="maxUploadSize" value="20971520" /> <!-- 20MB -->
+        </bean>
 	
 
 	<bean name="datasource"
@@ -90,6 +93,12 @@
 	<bean
 		class="com.User.User_Management_System.UtilityClass.EncryptPwd"
 		name="encryption" />
+		<bean
+		class="com.User.User_Management_System.UtilityClass.CheckValidation"
+		name="checkvalidation" />
+		<bean
+		class="com.User.User_Management_System.UtilityClass.Validation"
+		name="validation" />
 	<bean
 		class="com.User.User_Management_System.Service.UserServiceImpl"
 		name="userservice" />

@@ -2,6 +2,7 @@ package com.User.User_Management_System.Dao;
 
 import java.util.List;
 import com.User.User_Management_System.Bean.User;
+import com.User.User_Management_System.Bean.UserAddress;
 
 public interface UserDao {
 	public boolean userExist(String mail);
@@ -9,9 +10,11 @@ public interface UserDao {
 //	public int getUserId(String mail);
 //	public String getRole(String mail);
 	public List<User> getUserList();
-	public void deleteUser(int userid);
+	public void deleteUser(User user);
 	public void changePwd(User user);
-//	public void updateUserProfile(User user,int userid);
+	public void update(User user);
 	public User validUser(String email);
-//	public User getUserDetails(int userid); 
+	public User getUserDetails(int userid); 
+	public List<UserAddress> getUserAddress(int userid);
+	public void deleteAddress(UserAddress address);
 }
