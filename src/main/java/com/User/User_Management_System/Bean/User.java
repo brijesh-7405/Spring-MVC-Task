@@ -13,13 +13,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 //User Bean Class
 @Entity
-@Component
-@Scope("prototype")
 public class User {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -59,7 +54,6 @@ public class User {
 	@Valid
 	private List<UserAddress> address;
 	
-	//@LazyCollection(LazyCollectionOption.FALSE)
 	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 	private List<UserImage>  pic;
 	

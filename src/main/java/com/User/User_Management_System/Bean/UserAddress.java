@@ -6,26 +6,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 /*UserAddress Bean Class*/
 @Entity
-@Component
-@Scope("prototype")
 public class UserAddress {
-	@Transient
-	private int userid;
-	public int getUserid() {
-		return userid;
-	}
-	public void setUserid(int userid) {
-		this.userid = userid;
-	}
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int addressid;
@@ -97,7 +83,7 @@ public class UserAddress {
 	
 	@Override
 	public String toString() {
-		return "UserAddress [userid=" + userid + ", addressid=" + addressid + ", add1=" + add1 + ", add2=" + add2
+		return "UserAddress [addressid=" + addressid + ", add1=" + add1 + ", add2=" + add2
 				+ ", city=" + city + ", state=" + state + ", country=" + country + ", pincode=" + pincode + "]";
 	}
 }

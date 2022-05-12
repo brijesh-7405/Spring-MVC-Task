@@ -14,14 +14,14 @@ public class UserImageDaoImpl extends GenericDaoImpl<UserImage>  implements User
 	@Autowired
 	private HibernateTemplate hibernateTemplate;
 	String query = "from UserImage where imgid=?0";
-	@Autowired
-	UserImage userimg;
 	@Override
 	public UserImage getImage(int imgid) {
 		@SuppressWarnings({ "deprecation", "unchecked" })
 		List<UserImage> list = (List<UserImage>) hibernateTemplate.find(query, imgid);
+		UserImage userimg = null;
         if(list!=null && (list.size() > 0))
         {
+        	userimg = new UserImage();
         	userimg=list.get(0);
         }
 		return userimg;
