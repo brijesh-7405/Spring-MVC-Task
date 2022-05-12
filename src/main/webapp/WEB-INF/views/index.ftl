@@ -30,7 +30,7 @@
 						</div>
 						<div class="a-tag">
 							<a href="forgotpwd" class="label-name" style="text-decoration: underline">Forgot Password</a>
-							<a href="registration2" class="user-gap label-name" style="text-decoration: underline">New User?SignUp</a>
+							<a href="registration" class="user-gap label-name" style="text-decoration: underline">New User?SignUp</a>
 						</div>
 					</form>
 				 </div>

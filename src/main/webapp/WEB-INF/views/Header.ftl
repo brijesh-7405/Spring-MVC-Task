@@ -15,7 +15,7 @@
 				   <div class="col-md-10 col-sm-10 set-data"><p class="userheading"><i>User Management System</i></p></div>
 				   <#if !Session.USER??>
 				   		<div class="col-md-1 col-sm-1 set-data"><a href="index" class="header-tag">Home</a></div>
-				   		<div class="col-md-1 col-sm-1 set-data"><a href="registration2" class="header-tag">Signup</a></div>
+				   		<div class="col-md-1 col-sm-1 set-data"><a href="registration" class="header-tag">Signup</a></div>
 				   <#else>
 				   		<div class="col-md-1 col-sm-1 set-data"></div>
 				   		<div class="col-md-1 col-sm-1 set-data"><a href="LogOut" class="btn btn-danger">LogOut</a></div>

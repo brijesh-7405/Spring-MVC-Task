@@ -18,4 +18,6 @@ public interface UserService{
 	public User getUserDetails(int userID);
 	public List<UserAddress> getUserAddress(int userid);
 	public void deleteAddress(UserAddress address);
+	//public void deleteImage(int imgid);
+	public void deleteImage(int imageid);
 }

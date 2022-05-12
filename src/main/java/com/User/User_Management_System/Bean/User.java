@@ -8,15 +8,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
-import org.hibernate.FetchMode;
-import org.hibernate.annotations.Fetch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +30,7 @@ public class User {
 	public void setUserID(int userID) {
 		this.userID = userID;
 	}
+	
 	private long phone;
 	@NotEmpty(message="*Firstname is required")
 	@Pattern(regexp="[a-zA-Z]+",message="*Only Alphabets are Allowed in FirstName.")
@@ -43,18 +40,9 @@ public class User {
 	@Pattern(regexp="[a-zA-Z]+",message="*Only Alphabets are Allowed in LastName.")
 	private String lastname;
 	
-	@NotEmpty(message="*Email is required")
-	@Pattern(regexp="^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" 
-	        + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$",message="*Please Enter Valid Email-Id.")
-	
+	@Email(message="*Please Enter Valid Email-Id.")
 	private String email;
 	
-	@NotEmpty(message="*Password is required")
-//	@Pattern(regexp="^(?=.*[0-9])"
-//            + "(?=.*[a-z])(?=.*[A-Z])"
-//            + "(?=.*[@#$%^&+=])"
-//            + "(?=\\S+$).{8,20}$",message="*Please Choose Strong Password.")
-//	@Size(min=5,max=14,message="*Password must be 5 to 14 character")
 	private String password;
 	
 	@NotEmpty(message="*DateofBirth is required")
@@ -70,26 +58,24 @@ public class User {
 	@OneToMany(mappedBy = "user",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
 	@Valid
 	private List<UserAddress> address;
-//	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-//	private List<UserImage>  image;
-//	
-//public List<UserImage> getImage() {
-//		return image;
-//	}
-//	public void setImage(List<UserImage> image) {
-//		this.image = image;
-//	}
-public User() {
-		//super();
-		// TODO Auto-generated constructor stub
+	
+	//@LazyCollection(LazyCollectionOption.FALSE)
+	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+	private List<UserImage>  pic;
+	
+public List<UserImage> getPic() {
+		return pic;
 	}
+	public void setPic(List<UserImage> pic) {
+		this.pic = pic;
+	}
+public User() {}
 public List<UserAddress> getAddress() {
 		return address;
 	}
 	public void setAddress(List<UserAddress> address) {
 		this.address = address;
 	}
-//	private ArrayList<UserImage>  image;
  	public String getLanguage() {
 		return language;
 	}
@@ -140,7 +126,6 @@ public List<UserAddress> getAddress() {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	
 	public String getAnswer1() {
 		return answer1;
 	}

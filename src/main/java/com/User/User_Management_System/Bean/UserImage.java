@@ -1,22 +1,27 @@
 package com.User.User_Management_System.Bean;
 
-import java.io.InputStream;
-import java.util.Arrays;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 /* UserImage Bean Class*/
 @Entity
+@Component
+@Scope("prototype")
 public class UserImage {
 	@Transient
 	private int userid;
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int imgid;
+
+	@Lob
 	private byte[] imgbytes;
 	public byte[] getImgbytes() {
 		return imgbytes;

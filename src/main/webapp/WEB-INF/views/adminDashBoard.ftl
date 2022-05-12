@@ -47,7 +47,7 @@
 	</table>
 </div>
 <span class="admin-buttons">
-		<a href="registration2" class="btn btn-info admin-btn">Add New User</a>
+		<a href="registration" class="btn btn-info admin-btn">Add New User</a>
 		<a href="LogOut" class="btn btn-danger admin-btn">LogOut</a>
 </span>
 

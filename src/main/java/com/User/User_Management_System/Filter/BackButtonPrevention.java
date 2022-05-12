@@ -7,6 +7,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+@WebFilter(urlPatterns = {"/UserDetails","/userDashBoard","/EditServlet","/AdminWork","/UserData"})
 public class BackButtonPrevention implements Filter {
 	static final Logger LOG = LogManager.getLogger(BackButtonPrevention.class.getName());
 	public void destroy() {	}
@@ -24,9 +26,9 @@ public class BackButtonPrevention implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 
 		 HttpSession session=req.getSession(false);
-		 if(session.getAttribute("USER")==null)
+		 if(session==null)
 		 {
-			res.sendRedirect("index.jsp");
+			res.sendRedirect("index");
 		 }
 		 else
 		 {

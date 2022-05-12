@@ -96,9 +96,6 @@
 		<bean
 		class="com.User.User_Management_System.UtilityClass.CheckValidation"
 		name="checkvalidation" />
-		<bean
-		class="com.User.User_Management_System.UtilityClass.Validation"
-		name="validation" />
 	<bean
 		class="com.User.User_Management_System.Service.UserServiceImpl"
 		name="userservice" />
@@ -106,4 +103,6 @@
 		name="userdao" />
 		<bean class="com.User.User_Management_System.Dao.UserAddressDaoImpl"
 		name="useraddressdao" />
+		<bean class="com.User.User_Management_System.Dao.UserImageDaoImpl"
+		name="userimagedao" />
 </beans>
