@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-@WebFilter(urlPatterns = {"/UserDetails","/userDashBoard","/EditServlet","/AdminWork","/UserData"})
+@WebFilter(urlPatterns = {"/userDetails","/userDashBoard","/editServlet","/adminWork","/userData"})
 public class BackButtonPrevention implements Filter {
 	static final Logger LOG = LogManager.getLogger(BackButtonPrevention.class.getName());
 	public void destroy() {	}

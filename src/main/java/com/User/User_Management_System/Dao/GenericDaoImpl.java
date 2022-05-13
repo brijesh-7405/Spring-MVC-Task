@@ -40,6 +40,6 @@ public class GenericDaoImpl<T> implements GenericDao<T> {
 	}
 	@Transactional
 	public T find(Object id) {
-        return (T)this.hibernateTemplate.get(type,(int)id);
+        return (T)this.hibernateTemplate.get(type,(Integer)id);
     }
 }

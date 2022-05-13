@@ -1,0 +1,159 @@
+html,body{
+	margin: 0;
+	padding: 0;
+	 background-color: #2f4f4f;	
+}
+.login{
+	margin-top:180px;
+	border:2px solid white;
+	border-radius:12px;
+background-color: white;
+  height: 360px;
+  width:500px;
+}
+.heading{
+   font-size:40px;
+   margin-bottom:20px;
+}
+.login-btn{
+	border:2px solid white;
+	font-size:20px;
+	background-color:#2f4f4f;
+	color:white;
+	height:40px;
+}
+.edit-header{
+	 font-size:40px;
+   margin-left:370px;
+   margin-bottom:30px;
+}
+.header{
+   font-size:40px;
+   margin-left:380px;
+   margin-bottom:30px;
+}
+.Form-Section{
+	margin-top:122px;
+	border:2px solid white;
+	border-radius:13px;
+	background-color: white;
+	margin-bottom:80px;
+}
+.head-gap{
+	margin-left:20px;
+}
+.left-gap{
+	margin-left:30px;
+	margin-right:30px;
+}
+.uploadedimage
+{
+	position:relative;
+}
+.uploadedimage img{
+	margin:10px;
+	margin-bottom:10px;
+}
+.remove-img{
+	font-size:20px;
+	position:relative;
+	left:20%;
+	bottom:30%;
+	top:-40%;
+}
+.del-image {
+    cursor: pointer;
+    color:white;
+    position:absolute;
+    bottom:64px;
+    right:16px;
+}
+#add-design{
+	border:2px solid lightgrey;
+	border-radius:10px;
+	margin-bottom:20px;
+}
+.gap{
+	margin-top:20px;
+}
+.add-head{
+	margin-left:20px;
+}
+.right-gap{
+	margin-left:-20px;
+}
+.a-tag{
+	position:absolute;
+	margin-top:15px;
+}
+.user-gap{
+	position:relative;
+	left:100%;
+}
+.forgot-section{
+	margin-top:130px;
+	border:2px solid white;
+	border-radius:12px;
+background-color: white;
+  height: 520px;
+  width:550px;
+}
+.error, .r-btn-error, .btn-error, #error{
+	color:red;
+	font-size:10px;
+}
+div.default-header{
+	background-color:  #2a3439;
+	color:white;
+	font-size:25px;
+	height:68px;
+	width:100%;
+}
+div.row{
+	margin-right:0px;
+	margin-left:0px;
+}
+.set-data{
+	margin-top:15px;
+}
+.userheading{
+	margin-left:20px;
+	font-size:29px;
+}
+div.footer-position{
+	height:30px;
+  width: 100%;
+background-color:  #2a3439;
+  text-align: center;
+  color:white;
+}
+.buttons{
+	margin-left:620px;
+}
+.button-dg{
+	background-color:  #2a3439;
+	color:white;
+}
+ .logout-button-dg{
+ margin-left:30px;
+	background-color:  #2a3439;
+	color:white;
+}
+.button-dg:hover{
+	background-color:  #5bc0de;
+	color:white;
+}
+.logout-button-dg:hover{
+	background-color:  #d9534f;
+	color:white;
+}
+.title-name{
+	margin-left:470px;
+	font-size:46px;
+	margin-bottom:60px;
+	color:white;
+	margin-top:100px;
+}
+a.header-tag{
+	color:white;
+}

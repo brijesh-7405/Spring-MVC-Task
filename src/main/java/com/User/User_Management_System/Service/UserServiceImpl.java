@@ -1,7 +1,5 @@
 package com.User.User_Management_System.Service;
 
-
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -61,15 +59,13 @@ public class UserServiceImpl implements UserService{
 			LOG.info("User service,checkUser methods call");
 			User user = userdao.validUser(email);
 			List<UserImage> userimg = user.getPic();
-			List<UserImage> getimg= new ArrayList<UserImage>();
 			for(UserImage userimage : userimg)
 			{  	  
 		       	 String base64Image = Base64.getEncoder().encodeToString(userimage.getImgbytes());
 		       	 userimage.setBase64Image(base64Image);
 		       	 userimage.setImgid(userimage.getImgid());
-		       	 getimg.add(userimage);
 			}
-			
+			user.setPic(userimg);
 			return user;
 		}
 		public void changePwd(User user) 
@@ -114,14 +110,13 @@ public class UserServiceImpl implements UserService{
 			LOG.info("User service,getUserDetails methods call");
 			User user = userdao.find(userID);
 			List<UserImage> userimg = user.getPic();
-			List<UserImage> getimg= new ArrayList<UserImage>();
 			for(UserImage userimage : userimg)
 			{  	  
 		       	 String base64Image = Base64.getEncoder().encodeToString(userimage.getImgbytes());
 		       	 userimage.setBase64Image(base64Image);
 		       	 userimage.setImgid(userimage.getImgid());
-		       	 getimg.add(userimage);
 			}
+			user.setPic(userimg);
 			return user;
 		}
 		public List<UserAddress> getUserAddress(int userid)
@@ -138,7 +133,7 @@ public class UserServiceImpl implements UserService{
 		public void deleteImage(int imgid)
 		{
 			LOG.info("User Image service,deleteImage methods call");
-			UserImage userimg = userimagedao.getImage(imgid);
+			UserImage userimg = userimagedao.find(imgid);
 			userimagedao.delete(userimg);
 		}
 }

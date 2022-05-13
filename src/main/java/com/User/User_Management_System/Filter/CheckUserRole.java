@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.User.User_Management_System.Bean.User;
 
-@WebFilter(urlPatterns = {"/adminDashBoard","/AdminWork"})
+@WebFilter(urlPatterns = {"/adminDashBoard","/adminWork"})
 public class CheckUserRole implements Filter {
 	static final Logger LOG = LogManager.getLogger(CheckUserRole.class.getName());
 	public void destroy() {	}

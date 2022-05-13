@@ -58,62 +58,27 @@ public class SpringMVCController{
 	{
 		return "forgotpwd";
 	}
-	@PostMapping(path="/UserRegistration", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	@PostMapping(path="/userRegistration", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	public String registerUser(@Valid @ModelAttribute User  user,BindingResult br,Model model,HttpSession session,@RequestParam("image[]") CommonsMultipartFile[] files,HttpServletRequest request,@RequestParam("repass") String repass) throws IOException, ServletException
 	{
-		String msg="";
+		String msg=val.validData(user,repass);
+		List<String> errors = new ArrayList<String>();
 		if(br.hasErrors())  
         { 
 			List<FieldError> error =br.getFieldErrors();
-			String errors ="";
 			for(FieldError err: error)
 			{
-				errors += err.getDefaultMessage() + "<br>";
-			}
+				errors.add(err.getDefaultMessage());
+
+			}			
 			model.addAttribute("message",errors);
 			model.addAttribute("faildata",user);
 			return "registration";
         }
-		else if(user.getEmail().equals(""))
+		else if(!msg.equals("valid"))
 		{
-			msg= "*Email is required";
-			model.addAttribute("message",msg);
-			model.addAttribute("faildata",user);
-			return "registration";
-		}
-		else if(userservice.userExist(user.getEmail()))
-		{
-			LOG.info("*Email already exist");
-			msg= "*Email already exist";
-			model.addAttribute("message",msg);
-			model.addAttribute("faildata",user);
-			return "registration";
-		}
-		else if(user.getPassword().equals(""))
-		{
-			msg= "*Password is required";
-			model.addAttribute("message",msg);
-			model.addAttribute("faildata",user);
-			return "registration";
-		}
-		else if(String.valueOf(user.getPhone()).length()<10)
-		{
-			msg= "*Number not less than 10 Digits";
-			model.addAttribute("message",msg);
-			model.addAttribute("faildata",user);
-			return "registration";
-		}
-		else if(val.validatepwd(user.getPassword()))
-		{
-			msg="*Please Choose Strong Password.";
-			model.addAttribute("message",msg);
-			model.addAttribute("faildata",user);
-			return "registration";
-		}
-		else if(!user.getPassword().equals(repass))
-		{
-			msg= "*Confirm password Should be same as Password.";
-			model.addAttribute("message",msg);
+			errors.add(msg);
+			model.addAttribute("message",errors);
 			model.addAttribute("faildata",user);
 			return "registration";
 		}
@@ -135,17 +100,17 @@ public class SpringMVCController{
 			session=request.getSession(false);
 	        if(session.getAttribute("USER") != null)           
 	        {
-	        	return "redirect:AdminWork";      //if admin add new user from its login side then redirect it to admin panel
+	        	return "redirect:adminWork";      //if admin add new user from its login side then redirect it to admin panel
 	        	
 	        }
 	        else
 	        {
-	        	return "index";   //Check if session has no attribute the redirect it to login page
+	        	return "redirect:index";   //Check if session has no attribute the redirect it to login page
 	        }
 		}
 		
 	}
-	@RequestMapping(value = "/CheckUserExistDone", method = RequestMethod.POST)
+	@RequestMapping(value = "/checkUserExistDone", method = RequestMethod.POST)
 	@ResponseBody
 	public String checkuserexist(@RequestParam("email") String email)
 	{
@@ -157,7 +122,7 @@ public class SpringMVCController{
 		return message;
 	}
 	
-	@PostMapping("/LoginServlet")
+	@PostMapping("/loginServlet")
 	public String login(HttpServletRequest request,HttpSession session,Model model,@RequestParam String email,@RequestParam String password)
 	{
 		String pwd = encrypt.encryption(password);
@@ -177,7 +142,7 @@ public class SpringMVCController{
 					else
 					{
 						LOG.debug("Admin-logged-in");
-						return "redirect:AdminWork";
+						return "redirect:adminWork";
 						  
 					}
 				}
@@ -194,7 +159,7 @@ public class SpringMVCController{
 				return "index";
 			}
 	}
-	@RequestMapping("/AdminWork")
+	@RequestMapping("/adminWork")
 	public String adminPanel(Model model)
 	{
 		List<User> users;
@@ -208,7 +173,7 @@ public class SpringMVCController{
 	{
 		return "userDashBoard";
 	}
-	@RequestMapping("/LogOut")
+	@RequestMapping("/logOut")
 	public String logout(HttpServletRequest request,HttpSession session)
 	{
         session=request.getSession(false); 
@@ -217,9 +182,9 @@ public class SpringMVCController{
 	         session.invalidate(); 								//Session close or Session Invalidate after logout user
         }   
         LOG.debug("Successfully logged out");
-        return "index";
+        return "redirect:index";
 	}
-	@RequestMapping("/ForgotPwd")
+	@RequestMapping("/forgotPwd")
 	public String afterforgotpwd(Model model,@RequestParam String email
 									,@RequestParam String birthdate
 									,@RequestParam("q1") String ans1
@@ -262,7 +227,7 @@ public class SpringMVCController{
 	{
 		return "resetpwd";
 	}
-	@RequestMapping("/ResetPassword")
+	@RequestMapping("/resetPassword")
 	public String changepwd(HttpServletRequest request,@RequestParam("usermail") String usermail,@RequestParam String password)
 	{
 		String pwd = encrypt.encryption(password);
@@ -270,9 +235,9 @@ public class SpringMVCController{
 		user.setPassword(pwd);
 		LOG.info("Password is changed");
 		userservice.changePwd(user);      //Calling method who change the password and reset to the database
-		return "index";
+		return "redirect:index";
 	}
-	@RequestMapping(value = "/DeleteUser", method = RequestMethod.POST)
+	@RequestMapping(value = "/deleteUser", method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteUser(@RequestParam String userid)
 	{
@@ -280,9 +245,9 @@ public class SpringMVCController{
 		int uid = Integer.parseInt(userid);
 		userservice.deleteUser(uid);               //Calling a method to delete the user from the database
 		LOG.debug("User deleted");
-		return "redirect:AdminWork";
+		return "redirect:adminWork";
 	}
-	@RequestMapping("/UserDetails")
+	@RequestMapping("/userDetails")
 	public String goingToEdit(HttpServletRequest request,HttpSession session,Model model)
 	{
 		session=request.getSession(false);
@@ -303,16 +268,16 @@ public class SpringMVCController{
 			return "registration";
 		}
 	}
-	@PostMapping(path="/EditServlet", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	@PostMapping(path="/editServlet", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	public String edit(@Valid @ModelAttribute User  user,BindingResult br,Model model,HttpSession session,@RequestParam("image[]") CommonsMultipartFile[] files,HttpServletRequest request,@RequestParam("addressid") String [] addressid)
 	{
 		if(br.hasErrors())  
         { 
 			List<FieldError> error =br.getFieldErrors();
-			String errors ="";
+			List<String> errors = new ArrayList<String>();
 			for(FieldError err: error)
 			{
-				errors += err.getDefaultMessage() + "<br>";
+				errors.add(err.getDefaultMessage());
 			}
 			model.addAttribute("message",errors);
 			User usr = userservice.getUserDetails(user.getUserID());
@@ -393,10 +358,10 @@ public class SpringMVCController{
 				user.setPic(userimg);
 				userservice.updateUserProfile(user); //user profile updated
 		        
-		        return "redirect:UserData";
+		        return "redirect:userData";
 		}
 	}
-	@RequestMapping("/UserData")
+	@RequestMapping("/userData")
 	public String userData(HttpServletRequest request,HttpSession session) 
 	{
 		LOG.debug("Enter in userdata servlet");
@@ -405,7 +370,7 @@ public class SpringMVCController{
 		if(user.getRole().equals("admin"))							//Check the role of the user if admin then redirect to his Servlet
 		{
 			LOG.info("Admin is in Session");
-			return "redirect:AdminWork";
+			return "redirect:adminWork";
 		}
 		else														//If the  role of the user is user then update the user details in the database and then stored that updated user in session  
 		{
@@ -415,7 +380,7 @@ public class SpringMVCController{
 			return "redirect:userDashBoard";
 		}
 	}
-	@PostMapping("/RemoveImage")
+	@PostMapping("/removeImage")
 	@ResponseBody
 	public String deleteUserImage(@RequestParam String imgId)
 	{ 

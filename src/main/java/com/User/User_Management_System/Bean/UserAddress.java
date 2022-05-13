@@ -1,5 +1,7 @@
 package com.User.User_Management_System.Bean;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 
 import javax.persistence.GeneratedValue;
@@ -11,7 +13,8 @@ import javax.validation.constraints.Pattern;
 
 /*UserAddress Bean Class*/
 @Entity
-public class UserAddress {
+public class UserAddress implements Serializable{
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int addressid;

@@ -1,5 +1,7 @@
 package com.User.User_Management_System.Bean;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,7 +12,8 @@ import javax.persistence.Transient;
 
 /* UserImage Bean Class*/
 @Entity
-public class UserImage {
+public class UserImage implements Serializable {
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int imgid;
@@ -18,10 +21,10 @@ public class UserImage {
 	@Lob
 	private byte[] imgbytes;
 	public byte[] getImgbytes() {
-		return imgbytes;
+		return imgbytes.clone();
 	}
 	public void setImgbytes(byte[] imgbytes) {
-		this.imgbytes = imgbytes;
+		this.imgbytes = imgbytes.clone();
 	}
 	@Transient
 	private String base64Image;

@@ -92,6 +92,8 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>6.0.13.Final</version>
 		</dependency>
+		
+
 	</dependencies>
 
 	<build>
@@ -127,7 +129,6 @@
 					<artifactId>maven-clean-plugin</artifactId>
 					<version>3.1.0</version>
 				</plugin>
-				<!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_war_packaging -->
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>3.0.2</version>

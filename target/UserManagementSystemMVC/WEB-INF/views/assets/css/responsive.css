@@ -1,0 +1,58 @@
+@media (max-width: 1119px)
+{
+	.title-name{
+	 margin-left:350px;
+	}
+	.buttons{
+	margin-left:470px;
+   }
+   .header {
+    font-size: 40px;
+    margin-left: 290px;
+    margin-bottom: 30px;
+    }
+    .forgot-section{
+    margin-bottom:80px;
+    }
+    .edit-header{
+    margin-left:380px;
+    }
+}
+
+@media (max-width: 991px)
+{
+	div.default-header{
+	font-size:20px;
+	height:68px;
+	width:100%;
+    }
+    .header {
+    font-size: 40px;
+    margin-left: 230px;
+    margin-bottom: 30px;
+    }
+     .edit-header{
+    margin-left:280px;
+    }
+    .forgot-section{
+    margin-left:110px;
+    margin-bottom:70px;
+    }
+    .title-name{
+	 margin-left:300px;
+	}
+    .buttons{
+	margin-left:410px;
+   }
+   .button-dg{
+   margin-left:10px;
+   }
+    
+}
+@media (max-width: 575px){
+}
+
+@media (max-width: 421px){
+	
+
+}
